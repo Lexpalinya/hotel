@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase-server';
 import { WTopBar, BookingStatusPill } from '@/components/staff-bits';
 import { formatKip, formatDateRange } from '@/lib/format';
@@ -52,7 +53,7 @@ export default async function BookingsPage() {
                 padding: '14px 22px', borderTop: '1px solid var(--line-2)',
                 fontSize: 13, alignItems: 'center',
               }}>
-                <span className="h-mono" style={{ color: 'var(--ink-3)', fontSize: 12 }}>{b.code}</span>
+                <Link href={`/staff/bookings/${b.id}`} className="h-mono" style={{ color: 'var(--accent)', fontSize: 12, textDecoration: 'underline' }}>{b.code}</Link>
                 <span>
                   <div>{guest?.full_name ?? walkinName ?? '—'}</div>
                   <div style={{ fontSize: 11, color: 'var(--ink-3)' }}>

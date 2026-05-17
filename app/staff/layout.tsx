@@ -3,12 +3,14 @@ import { createClient } from '@/lib/supabase-server';
 import { redirect } from 'next/navigation';
 
 const NAV = [
-  { href: '/staff', icon: '◐', label: 'Dashboard' },
-  { href: '/staff/rooms', icon: '▦', label: 'ຕາລາງຫ້ອງ' },
-  { href: '/staff/bookings', icon: '☰', label: 'ການຈອງ' },
-  { href: '/staff/guests', icon: '◯', label: 'ແຂກ' },
-  { href: '/staff/floors', icon: '≡', label: 'ຊັ້ນ' },
-  { href: '/staff/reports', icon: '⎘', label: 'ລາຍງານ' },
+  { href: '/staff',              icon: '◐', label: 'Dashboard' },
+  { href: '/staff/rooms',        icon: '▦', label: 'ຕາລາງຫ້ອງ' },
+  { href: '/staff/bookings',     icon: '☰', label: 'ການຈອງ' },
+  { href: '/staff/guests',       icon: '◯', label: 'ແຂກ' },
+  { href: '/staff/housekeeping', icon: '✲', label: 'ແມ່ບ້ານ' },
+  { href: '/staff/inventory',    icon: '▤', label: 'ສະຕັອກ' },
+  { href: '/staff/floors',       icon: '≡', label: 'ຊັ້ນ' },
+  { href: '/staff/reports',      icon: '⎘', label: 'ລາຍງານ' },
 ];
 
 export default async function StaffLayout({ children }: { children: React.ReactNode }) {
