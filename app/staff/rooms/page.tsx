@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase-server';
 import { WTopBar, RoomStatusPill } from '@/components/staff-bits';
 import type { Room, Floor } from '@/lib/types';
+import AddRoomButton from './add-room-button';
+import RoomStatusMenu from './room-status-menu';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,6 +35,7 @@ export default async function RoomsPage() {
       <WTopBar
         title="ຕາລາງຫ້ອງ"
         sub={`${rooms?.length ?? 0} ຫ້ອງ · ${floors?.length ?? 0} ຊັ້ນ`}
+        actions={<AddRoomButton floors={floors ?? []} />}
       />
       <div style={{ padding: 28, display: 'grid', gap: 14 }}>
         {sortedFloors.map((f) => {
@@ -53,17 +56,7 @@ export default async function RoomsPage() {
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(98px, 1fr))', gap: 8 }}>
                 {rs.map((r) => (
-                  <div key={r.id} style={{
-                    padding: '10px 12px', borderRadius: 8,
-                    background: STATUS_COLORS[r.status],
-                    color: r.status === 'occupied' ? 'white' : 'var(--ink)',
-                    border: '1px solid var(--line-2)',
-                  }}>
-                    <div className="h-mono" style={{ fontSize: 16, fontWeight: 600 }}>{r.number}</div>
-                    <div style={{ fontSize: 9.5, marginTop: 4, opacity: 0.8 }}>
-                      <RoomStatusPill status={r.status} />
-                    </div>
-                  </div>
+                  <RoomStatusMenu key={r.id} room={r} bg={STATUS_COLORS[r.status]} />
                 ))}
               </div>
             </div>
