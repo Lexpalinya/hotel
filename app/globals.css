@@ -1,0 +1,84 @@
+/* === University Hotel — design tokens (extracted from prototype) === */
+:root {
+  --ink: oklch(0.22 0.012 60);
+  --ink-2: oklch(0.42 0.012 60);
+  --ink-3: oklch(0.62 0.010 60);
+  --ink-4: oklch(0.78 0.008 65);
+  --paper: oklch(0.985 0.005 75);
+  --paper-2: oklch(0.955 0.008 70);
+  --paper-3: oklch(0.925 0.010 65);
+  --line: oklch(0.88 0.010 70);
+  --line-2: oklch(0.94 0.008 70);
+
+  --accent: oklch(0.55 0.115 40);
+  --accent-deep: oklch(0.42 0.10 38);
+  --accent-soft: oklch(0.94 0.035 50);
+  --accent-ink: oklch(0.32 0.10 38);
+
+  --ok: oklch(0.55 0.085 150);
+  --ok-soft: oklch(0.94 0.04 150);
+  --warn: oklch(0.68 0.125 75);
+  --warn-soft: oklch(0.95 0.06 80);
+  --danger: oklch(0.55 0.16 25);
+  --danger-soft: oklch(0.94 0.05 25);
+  --info: oklch(0.55 0.07 230);
+  --info-soft: oklch(0.94 0.03 230);
+
+  --font-ui: "IBM Plex Sans Thai", "IBM Plex Sans", system-ui, sans-serif;
+  --font-display: "Newsreader", "IBM Plex Serif", Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 20px;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; font-family: var(--font-ui); color: var(--ink); }
+body { background: #f0eee9; }
+
+.h-card { background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-md); }
+.h-mono { font-family: var(--font-mono); font-feature-settings: "tnum"; }
+.h-serif { font-family: var(--font-display); font-weight: 500; letter-spacing: -0.01em; }
+.h-eyebrow {
+  font-family: var(--font-mono); font-size: 11px; color: var(--ink-3);
+  text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500;
+}
+
+.h-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 0 14px; height: 36px; border-radius: 8px; font-size: 13px;
+  border: 1px solid var(--line); background: var(--paper); color: var(--ink);
+  font-family: var(--font-ui); cursor: pointer; transition: background .12s, border-color .12s;
+}
+.h-btn:hover { background: var(--paper-2); border-color: var(--ink-4); }
+.h-btn--accent  { background: var(--accent); color: white; border-color: var(--accent); }
+.h-btn--accent:hover { background: var(--accent-deep); border-color: var(--accent-deep); }
+.h-btn--primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.h-btn--primary:hover { background: oklch(0.18 0.012 60); }
+
+.h-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 0 10px; height: 22px; border-radius: 999px;
+  font-size: 11px; font-weight: 500;
+  background: var(--paper-2); color: var(--ink-2); border: 1px solid var(--line);
+}
+.h-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .7; }
+.h-pill--ok      { background: var(--ok-soft);     color: var(--ok);      border-color: transparent; }
+.h-pill--warn    { background: var(--warn-soft);   color: oklch(0.45 0.12 75); border-color: transparent; }
+.h-pill--danger  { background: var(--danger-soft); color: var(--danger);  border-color: transparent; }
+.h-pill--info    { background: var(--info-soft);   color: var(--info);    border-color: transparent; }
+.h-pill--accent  { background: var(--accent-soft); color: var(--accent-ink); border-color: transparent; }
+.h-pill--dark    { background: var(--ink); color: var(--paper); border-color: transparent; }
+
+input, textarea, select {
+  font-family: inherit; font-size: 13px; color: var(--ink);
+  border: 1px solid var(--line); background: var(--paper);
+  border-radius: 8px; padding: 9px 12px; outline: none;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+a { color: inherit; text-decoration: none; }
