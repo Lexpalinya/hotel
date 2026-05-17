@@ -56,7 +56,7 @@ function LoginForm() {
       padding: '40px 24px',
     }}>
       <div className="h-card" style={{ width: '100%', maxWidth: 420, padding: 32 }}>
-        <div className="h-eyebrow">UNIVERSITY HOTEL</div>
+        <div className="h-eyebrow">SUNANTHA HOTEL</div>
         <h1 className="h-serif" style={{ fontSize: 28, margin: '4px 0 24px' }}>
           {mode === 'login' ? 'ເຂົ້າສູ່ລະບົບ' : 'ສ້າງບັນຊີ'}
         </h1>

@@ -2,9 +2,9 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'University Hotel',
-    short_name: 'UniHotel',
-    description: 'ລະບົບ Check-in / Check-out ໂຮງແຮມໃນມະຫາວິທະຍາໄລ',
+    name: 'ໂຮງແຮມສຸນັນທາ — Sunantha Hotel',
+    short_name: 'Sunantha',
+    description: 'ລະບົບ Check-in / Check-out ໂຮງແຮມສຸນັນທາ',
     start_url: '/',
     scope: '/',
     display: 'standalone',

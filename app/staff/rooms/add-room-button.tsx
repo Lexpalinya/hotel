@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase-client';
 import { Modal, Field } from '@/components/modal';
+import ImageUpload from '@/components/image-upload';
 import type { Floor } from '@/lib/types';
 
 export default function AddRoomButton({ floors }: { floors: Floor[] }) {
@@ -20,10 +21,12 @@ export default function AddRoomButton({ floors }: { floors: Floor[] }) {
   const [floorId, setFloorId] = useState(floors[0]?.id ?? '');
   const [amenities, setAmenities] = useState('WiFi, AC');
   const [description, setDescription] = useState('');
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   const reset = () => {
     setNumber(''); setType('Standard'); setBeds('King'); setCapacity(2);
-    setPrice(1200); setFloorId(floors[0]?.id ?? ''); setAmenities('WiFi, AC'); setDescription('');
+    setPrice(1200); setFloorId(floors[0]?.id ?? ''); setAmenities('WiFi, AC');
+    setDescription(''); setImageUrl(null);
     setErr(null);
   };
 
@@ -37,6 +40,7 @@ export default function AddRoomButton({ floors }: { floors: Floor[] }) {
         floor_id: floorId || null,
         amenities: amenities.split(',').map(s => s.trim()).filter(Boolean),
         description: description || null,
+        image_url: imageUrl,
         status: 'available',
       });
       if (error) { setErr(error.message); return; }
@@ -107,6 +111,7 @@ export default function AddRoomButton({ floors }: { floors: Floor[] }) {
           <Field label="ລາຍລະອຽດ">
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2} placeholder="(optional)" />
           </Field>
+          <ImageUpload value={imageUrl} onChange={setImageUrl} label="ຮູບຫ້ອງ" />
           {err && (
             <div style={{ fontSize: 12, color: 'var(--danger)', background: 'var(--danger-soft)', padding: '8px 10px', borderRadius: 6 }}>
               {err}

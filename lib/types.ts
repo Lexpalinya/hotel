@@ -38,6 +38,7 @@ export interface Room {
   status: RoomStatus;
   amenities: string[];
   description: string | null;
+  image_url: string | null;
 }
 
 export interface Booking {

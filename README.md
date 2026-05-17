@@ -1,6 +1,6 @@
-# University Hotel — MVP
+# ໂຮງແຮມສຸນັນທາ — Sunantha Hotel · MVP
 
-ระบบ check-in / check-out โรงแรมในมหาวิทยาลัย — **MVP ใช้งานได้จริง**: รับ booking, รับ payment (mock), self check-in, staff console พร้อม dashboard และ CRUD
+ระบบ check-in / check-out โรงแรม Sunantha — **MVP ใช้งานได้จริง**: รับ booking, รับ payment (mock), self check-in, staff console พร้อม dashboard และ CRUD
 
 Stack: Next.js 14 (App Router, TypeScript) · Supabase (Postgres + Auth + RLS) · Vercel (deploy)
 

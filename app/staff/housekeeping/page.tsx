@@ -24,8 +24,8 @@ export default async function HousekeepingPage() {
         sub={`${(tasks ?? []).filter((t) => t.status !== 'done').length} ງານທີ່ຍັງຄ້າງ · ${tasks?.length ?? 0} ທັງໝົດ`}
         actions={<NewTaskButton rooms={rooms ?? []} staff={staff ?? []} />}
       />
-      <div style={{ padding: 28, display: 'grid', gap: 22 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
+      <div style={{ padding: 'clamp(14px, 3vw, 28px)', display: 'grid', gap: 22 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 14 }}>
           <Stat label="ງານທັງໝົດ" value={tasks?.length ?? 0} hint="ມື້ນີ້" />
           <Stat label="ຍັງບໍ່ເລີ່ມ" value={open} hint="ລໍຖ້າມອບໝາຍ" />
           <Stat label="ກຳລັງເຮັດ" value={inProgress} hint="in progress" />

@@ -1,4 +1,4 @@
-// Minimal service worker for University Hotel PWA.
+// Minimal service worker for Sunantha Hotel PWA.
 // Strategy:
 //   - HTML pages (navigation): network-first, fall back to cache, then offline page.
 //   - Static assets (_next/static, /icon.svg, /vendor): cache-first.
@@ -6,7 +6,7 @@
 // Cache name versions on every deploy via the BUILD_ID query if needed; for now
 // the SW updates whenever its body changes, which prompts skip-waiting below.
 
-const CACHE = 'unihotel-v1';
+const CACHE = 'sunantha-v1';
 const ASSETS_PREFIX = ['/_next/static/', '/icon', '/apple-icon', '/manifest.webmanifest', '/favicon'];
 const STATIC_FILES = ['/'];
 

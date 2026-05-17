@@ -37,7 +37,7 @@ export default async function RoomsPage() {
         sub={`${rooms?.length ?? 0} ຫ້ອງ · ${floors?.length ?? 0} ຊັ້ນ`}
         actions={<AddRoomButton floors={floors ?? []} />}
       />
-      <div style={{ padding: 28, display: 'grid', gap: 14 }}>
+      <div style={{ padding: 'clamp(14px, 3vw, 28px)', display: 'grid', gap: 14 }}>
         {sortedFloors.map((f) => {
           const rs = byFloor.get(f.id) ?? [];
           return (

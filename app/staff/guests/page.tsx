@@ -11,8 +11,9 @@ export default async function GuestsPage() {
   return (
     <>
       <WTopBar title="ແຂກ" sub={`${guests?.length ?? 0} ບັນຊີ`} />
-      <div style={{ padding: 28 }}>
-        <div className="h-card" style={{ padding: 0 }}>
+      <div style={{ padding: 'clamp(14px, 3vw, 28px)' }}>
+        <div className="h-card" style={{ padding: 0, overflow: 'auto' }}>
+          <div style={{ minWidth: 720 }}>
           <div style={{
             display: 'grid', gridTemplateColumns: '60px 1.5fr 1.2fr 1.5fr 120px',
             padding: '12px 22px', background: 'var(--paper-2)',
@@ -43,6 +44,7 @@ export default async function GuestsPage() {
               <span className="h-pill h-pill--ok"><span className="dot" />active</span>
             </div>
           ))}
+          </div>
         </div>
       </div>
     </>

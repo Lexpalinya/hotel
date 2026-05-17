@@ -1,5 +1,5 @@
 -- ================================================================
--- University Hotel — MVP schema
+-- Sunantha Hotel — MVP schema
 -- Run in Supabase SQL Editor (paste this whole file). Idempotent.
 -- ================================================================
 

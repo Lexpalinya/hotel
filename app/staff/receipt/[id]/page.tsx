@@ -54,9 +54,9 @@ export default async function Receipt({ params }: { params: { id: string } }) {
           {/* Header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 32, paddingBottom: 24, borderBottom: '2px solid var(--ink)' }}>
             <div>
-              <div className="h-serif" style={{ fontSize: 28, letterSpacing: '-0.01em' }}>University Hotel</div>
+              <div className="h-serif" style={{ fontSize: 28, letterSpacing: '-0.01em' }}>ໂຮງແຮມສຸນັນທາ</div>
               <div style={{ fontSize: 11, color: 'var(--ink-3)', marginTop: 4 }}>
-                ມະຫາວິທະຍາໄລ · staff.unihotel.ac.th
+                Sunantha Hotel · ໃບເສັດຮັບເງິນ
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>

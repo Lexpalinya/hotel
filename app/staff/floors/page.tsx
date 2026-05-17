@@ -14,7 +14,7 @@ export default async function FloorsPage() {
     <>
       <WTopBar title="ຊັ້ນ + ໂຄງສ້າງອາຄານ"
         sub={`${floors?.length ?? 0} ຊັ້ນ · ${rooms?.length ?? 0} ຫ້ອງລວມ`} />
-      <div style={{ padding: 28, display: 'grid', gap: 14 }}>
+      <div style={{ padding: 'clamp(14px, 3vw, 28px)', display: 'grid', gap: 14 }}>
         {floors?.map((f) => {
           const fr = (rooms ?? []).filter((r) => r.floor_id === f.id);
           const typeCounts = fr.reduce<Record<string, number>>((acc, r) => {

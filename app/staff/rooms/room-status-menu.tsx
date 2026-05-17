@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase-client';
 import { Modal } from '@/components/modal';
+import ImageUpload from '@/components/image-upload';
 import { RoomStatusPill } from '@/components/staff-bits';
 import type { Room, RoomStatus } from '@/lib/types';
 
@@ -26,6 +27,14 @@ export default function RoomStatusMenu({ room, bg }: { room: Room; bg: string })
       const supabase = createClient();
       await supabase.from('rooms').update({ status }).eq('id', room.id);
       setOpen(false);
+      router.refresh();
+    });
+  };
+
+  const updateImage = (url: string | null) => {
+    startTransition(async () => {
+      const supabase = createClient();
+      await supabase.from('rooms').update({ image_url: url }).eq('id', room.id);
       router.refresh();
     });
   };
@@ -59,7 +68,8 @@ export default function RoomStatusMenu({ room, bg }: { room: Room; bg: string })
         onClose={() => setOpen(false)}
         title={`ຫ້ອງ ${room.number}`}
         sub={`${room.type} · ₭${room.price_per_night.toLocaleString()}/ຄືນ · ${room.capacity} ຄົນ`}>
-        <div style={{ display: 'grid', gap: 8 }}>
+        <div style={{ display: 'grid', gap: 16 }}>
+          <ImageUpload value={room.image_url} onChange={updateImage} label="ຮູບຫ້ອງ" />
           <div className="h-eyebrow" style={{ marginBottom: 4 }}>ປ່ຽນສະຖານະ</div>
           {STATUSES.map((s) => (
             <button

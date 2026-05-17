@@ -57,7 +57,7 @@ export default function Kanban({ tasks }: { tasks: Task[] }) {
   };
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+    <div className="staff-kanban" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 16 }}>
       {COLS.map((col) => {
         const colTasks = tasks.filter((t) => t.status === col.id);
         return (

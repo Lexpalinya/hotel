@@ -2,15 +2,16 @@
 
 export function WTopBar({ title, sub, actions }: { title: string; sub?: string; actions?: React.ReactNode }) {
   return (
-    <div style={{
+    <div className="w-topbar" style={{
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      padding: '20px 28px 18px', borderBottom: '1px solid var(--line)', background: 'var(--paper)',
+      padding: '18px 24px', borderBottom: '1px solid var(--line)', background: 'var(--paper)',
+      gap: 12,
     }}>
-      <div>
-        <h1 className="h-serif" style={{ fontSize: 28, margin: 0, letterSpacing: '-0.015em' }}>{title}</h1>
+      <div style={{ minWidth: 0, flex: 1 }}>
+        <h1 className="h-serif" style={{ fontSize: 'clamp(20px, 4vw, 28px)', margin: 0, letterSpacing: '-0.015em', lineHeight: 1.2 }}>{title}</h1>
         {sub && <div style={{ fontSize: 12, color: 'var(--ink-3)', marginTop: 4 }}>{sub}</div>}
       </div>
-      <div style={{ display: 'flex', gap: 8 }}>{actions}</div>
+      <div className="w-topbar-actions" style={{ display: 'flex', gap: 8 }}>{actions}</div>
     </div>
   );
 }

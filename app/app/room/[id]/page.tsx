@@ -12,13 +12,21 @@ export default async function RoomDetail({ params }: { params: { id: string } })
 
   return (
     <div style={{ background: '#f7f5f0' }}>
-      <div style={{
-        height: 200, background: 'linear-gradient(135deg, var(--accent-soft), var(--paper-2))',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        color: 'var(--accent-ink)', fontSize: 13, fontFamily: 'var(--font-mono)',
-      }}>
-        ROOM {room.number} · {room.type.toUpperCase()}
-      </div>
+      {room.image_url ? (
+        <div style={{ width: '100%', height: 240, overflow: 'hidden', background: 'var(--paper-2)' }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={room.image_url} alt={`ຫ້ອງ ${room.number}`}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+        </div>
+      ) : (
+        <div style={{
+          height: 200, background: 'linear-gradient(135deg, var(--accent-soft), var(--paper-2))',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: 'var(--accent-ink)', fontSize: 13, fontFamily: 'var(--font-mono)',
+        }}>
+          ROOM {room.number} · {room.type.toUpperCase()}
+        </div>
+      )}
       <div style={{ padding: '20px 18px 100px' }}>
         <div className="h-eyebrow" style={{ color: 'var(--accent)' }}>{room.type.toUpperCase()}</div>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginTop: 4 }}>

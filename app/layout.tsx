@@ -3,13 +3,13 @@ import type { Metadata, Viewport } from 'next';
 import ServiceWorkerRegister from '@/components/sw-register';
 
 export const metadata: Metadata = {
-  title: 'University Hotel',
-  description: 'ລະບົບ Check-in / Check-out ໂຮງແຮມໃນມະຫາວິທະຍາໄລ',
-  applicationName: 'University Hotel',
+  title: 'ໂຮງແຮມສຸນັນທາ · Sunantha Hotel',
+  description: 'ລະບົບ Check-in / Check-out ໂຮງແຮມສຸນັນທາ',
+  applicationName: 'Sunantha Hotel',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'UniHotel',
+    title: 'Sunantha',
   },
   formatDetection: { telephone: false },
   icons: {

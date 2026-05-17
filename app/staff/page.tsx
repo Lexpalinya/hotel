@@ -39,15 +39,15 @@ export default async function Dashboard() {
         title="Dashboard"
         sub={`ພາບລວມໂຮງແຮມ · ${new Date().toLocaleDateString('lo-LA', { day: 'numeric', month: 'long', year: 'numeric' })}`}
       />
-      <div style={{ padding: 28, display: 'grid', gap: 22 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
+      <div style={{ padding: 'clamp(14px, 3vw, 28px)', display: 'grid', gap: 22 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 14 }}>
           <Stat label="OCCUPANCY" value={`${occupancy}%`} hint={`${occupiedRooms ?? 0} / ${totalRooms ?? 0} ຫ້ອງ`} />
           <Stat label="ມາວັນນີ້" value={arrivals?.length ?? 0} hint="check-in ຄ້າງ" />
           <Stat label="ລໍຄວາມສະອາດ" value={dirtyRooms ?? 0} hint="ຫ້ອງລໍຖ້າທຳຄວາມສະອາດ" />
           <Stat label="ລາຍຮັບລວມ" value={formatKip(totalRevenue)} hint="ທັງໝົດ (ຈ່າຍແລ້ວ)" />
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 22 }}>
+        <div className="staff-2col" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)', gap: 22 }}>
           <div className="h-card" style={{ padding: 0 }}>
             <div style={{ padding: '18px 22px', borderBottom: '1px solid var(--line)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>

@@ -13,7 +13,7 @@ export default function Home() {
         <div className="h-eyebrow" style={{ marginBottom: 8 }}>MVP · v1.0</div>
         <h1 className="h-serif" style={{ fontSize: 44, lineHeight: 1.1, margin: 0, letterSpacing: '-0.02em' }}>
           ລະບົບ Check-in / Check-out<br />
-          <span style={{ color: 'var(--ink-3)', fontStyle: 'italic' }}>ໂຮງແຮມໃນມະຫາວິທະຍາໄລ</span>
+          <span style={{ color: 'var(--ink-3)', fontStyle: 'italic' }}>ໂຮງແຮມສຸນັນທາ</span>
         </h1>
         <p style={{ marginTop: 18, color: 'var(--ink-2)', lineHeight: 1.6, fontSize: 15 }}>
           ເລືອກປະຕູເຂົ້າ — ລູກຄ້າຈອງຫ້ອງ ແລະ self check-in ຜ່ານມືຖື · ພະນັກງານຈັດການຈາກ web console

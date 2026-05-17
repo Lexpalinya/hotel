@@ -26,8 +26,8 @@ export default async function ReportsPage() {
   return (
     <>
       <WTopBar title="ລາຍງານ" sub="ສະຫຼຸບໂດຍລວມ" />
-      <div style={{ padding: 28, display: 'grid', gap: 22 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
+      <div style={{ padding: 'clamp(14px, 3vw, 28px)', display: 'grid', gap: 22 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 14 }}>
           <Stat label="OCCUPANCY" value={`${occupancy}%`} hint={`${occupiedRooms ?? 0} / ${totalRooms ?? 0}`} />
           <Stat label="REVENUE" value={formatKip(totalRev)} hint="ຈ່າຍແລ້ວທັງໝົດ" />
           <Stat label="BOOKINGS" value={totalBookings ?? 0} hint="ທັງໝົດ" />

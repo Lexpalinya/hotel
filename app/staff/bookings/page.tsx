@@ -25,8 +25,9 @@ export default async function BookingsPage() {
         sub={`${bookings?.length ?? 0} ລາຍການລ່າສຸດ`}
         actions={<NewBookingButton rooms={rooms ?? []} />}
       />
-      <div style={{ padding: 28 }}>
-        <div className="h-card" style={{ padding: 0, overflow: 'hidden' }}>
+      <div style={{ padding: 'clamp(14px, 3vw, 28px)' }}>
+        <div className="h-card" style={{ padding: 0, overflow: 'auto' }}>
+          <div style={{ minWidth: 920 }}>
           <div style={{
             display: 'grid', gridTemplateColumns: '120px 1.5fr 70px 1.3fr 60px 100px 110px 100px',
             padding: '12px 22px', borderBottom: '1px solid var(--line)',
@@ -69,6 +70,7 @@ export default async function BookingsPage() {
               </div>
             );
           })}
+          </div>
         </div>
       </div>
     </>

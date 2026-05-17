@@ -50,7 +50,7 @@ export default async function BookingDetail({ params }: { params: { id: string }
           </>
         }
       />
-      <div style={{ padding: 28, display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 22 }}>
+      <div className="booking-detail-2col" style={{ padding: 'clamp(14px, 3vw, 28px)', display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)', gap: 22 }}>
         {/* LEFT: details */}
         <div style={{ display: 'grid', gap: 18 }}>
           <div className="h-card" style={{ padding: 22 }}>

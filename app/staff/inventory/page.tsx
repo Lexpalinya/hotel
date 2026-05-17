@@ -35,19 +35,20 @@ export default async function InventoryPage() {
         sub={`${items?.length ?? 0} ລາຍການ · ${lowStock} ໃກ້ໝົດ`}
         actions={<AddItemButton />}
       />
-      <div style={{ padding: 28, display: 'grid', gap: 22 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+      <div style={{ padding: 'clamp(14px, 3vw, 28px)', display: 'grid', gap: 22 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 14 }}>
           <Stat label="ລາຍການທັງໝົດ" value={items?.length ?? 0} />
           <Stat label="ໃກ້ໝົດ / ໝົດ" value={lowStock} hint="stock ≤ threshold" />
           <Stat label="ມູນຄ່າສະຕັອກ" value={formatKip(totalValue)} hint="ຄຳນວນຈາກ price × stock" />
         </div>
 
         {Array.from(byCat.entries()).map(([cat, list]) => (
-          <div key={cat} className="h-card" style={{ padding: 0 }}>
+          <div key={cat} className="h-card" style={{ padding: 0, overflow: 'auto' }}>
             <div style={{ padding: '14px 22px', borderBottom: '1px solid var(--line)' }}>
               <div className="h-eyebrow">{CAT_LABEL[cat] ?? cat}</div>
               <div style={{ fontSize: 13, color: 'var(--ink-2)', marginTop: 2 }}>{list?.length ?? 0} ລາຍການ</div>
             </div>
+            <div style={{ minWidth: 720 }}>
             <div style={{
               display: 'grid', gridTemplateColumns: '120px 1.5fr 80px 80px 80px 100px 140px',
               padding: '10px 22px', background: 'var(--paper-2)',
@@ -74,6 +75,7 @@ export default async function InventoryPage() {
                 <StockButton item={it} />
               </div>
             ))}
+            </div>
           </div>
         ))}
 
