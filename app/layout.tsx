@@ -1,9 +1,39 @@
 import './globals.css';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
+import ServiceWorkerRegister from '@/components/sw-register';
 
 export const metadata: Metadata = {
   title: 'University Hotel',
   description: 'ລະບົບ Check-in / Check-out ໂຮງແຮມໃນມະຫາວິທະຍາໄລ',
+  applicationName: 'University Hotel',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'UniHotel',
+  },
+  formatDetection: { telephone: false },
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+    ],
+    apple: [
+      { url: '/apple-icon.png', sizes: '180x180' },
+    ],
+  },
+  other: {
+    'mobile-web-app-capable': 'yes',
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f0eee9' },
+    { media: '(prefers-color-scheme: dark)',  color: '#3a2c20' },
+  ],
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -15,7 +45,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <ServiceWorkerRegister />
+      </body>
     </html>
   );
 }
