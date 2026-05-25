@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase-client';
 import { Modal, Field } from '@/components/modal';
@@ -28,6 +28,18 @@ export default function NewBookingButton({ rooms }: { rooms: Room[] }) {
   const room = rooms.find((r) => r.id === roomId);
   const nights = nightsBetween(checkIn, checkOut);
   const total = room ? nights * room.price_per_night : 0;
+  const maxGuests = room?.capacity ?? 99;
+
+  // เมื่อเปลี่ยนห้อง ถ้า guests เกิน capacity ของห้องใหม่ ให้ clamp ลง
+  useEffect(() => {
+    if (room && guests > room.capacity) setGuests(room.capacity);
+  }, [room, guests]);
+
+  const setGuestsClamped = (raw: number) => {
+    if (!Number.isFinite(raw)) { setGuests(1); return; }
+    const cap = room?.capacity ?? 99;
+    setGuests(Math.max(1, Math.min(cap, Math.floor(raw))));
+  };
 
   const reset = () => {
     setName(''); setEmail(''); setPhone(''); setRoomId('');
@@ -40,6 +52,8 @@ export default function NewBookingButton({ rooms }: { rooms: Room[] }) {
     e.preventDefault();
     setErr(null);
     if (!room) { setErr('ເລືອກຫ້ອງ'); return; }
+    if (guests > room.capacity) { setErr(`ຫ້ອງນີ້ຮັບໄດ້ສູງສຸດ ${room.capacity} ຄົນ`); return; }
+    if (guests < 1) { setErr('ກະລຸນາໃສ່ຈຳນວນຜູ້ເຂົ້າພັກ'); return; }
 
     startTransition(async () => {
       const supabase = createClient();
@@ -144,8 +158,17 @@ export default function NewBookingButton({ rooms }: { rooms: Room[] }) {
             <Field label="ອອກ">
               <input type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)} required min={checkIn} />
             </Field>
-            <Field label="ຜູ້ເຂົ້າພັກ">
-              <input type="number" value={guests} onChange={(e) => setGuests(Number(e.target.value))} min={1} max={room?.capacity || 6} />
+            <Field label="ຜູ້ເຂົ້າພັກ" hint={room ? `ສູງສຸດ ${room.capacity} ຄົນ` : 'ເລືອກຫ້ອງກ່ອນ'}>
+              <input
+                type="number"
+                inputMode="numeric"
+                value={guests}
+                onChange={(e) => setGuestsClamped(Number(e.target.value))}
+                onBlur={() => setGuestsClamped(guests)}
+                min={1}
+                max={maxGuests}
+                disabled={!room}
+              />
             </Field>
           </div>
 

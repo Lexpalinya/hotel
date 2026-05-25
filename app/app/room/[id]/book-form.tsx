@@ -20,8 +20,22 @@ export default function BookForm({ room }: { room: Room }) {
   const nights = nightsBetween(checkIn, checkOut);
   const total = nights * room.price_per_night;
 
+  const setGuestsClamped = (raw: number) => {
+    if (!Number.isFinite(raw)) { setGuests(1); return; }
+    const n = Math.max(1, Math.min(room.capacity, Math.floor(raw)));
+    setGuests(n);
+  };
+
   const book = () => {
     setError(null);
+    if (guests > room.capacity) {
+      setError(`ຫ້ອງນີ້ຮັບໄດ້ສູງສຸດ ${room.capacity} ຄົນ`);
+      return;
+    }
+    if (guests < 1) {
+      setError('ກະລຸນາໃສ່ຈຳນວນຜູ້ເຂົ້າພັກ');
+      return;
+    }
     startTransition(async () => {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
@@ -62,8 +76,24 @@ export default function BookForm({ room }: { room: Room }) {
           </label>
         </div>
         <label style={{ display: 'grid', gap: 4 }}>
-          <span style={{ fontSize: 10, color: 'var(--ink-3)' }}>ຜູ້ເຂົ້າພັກ</span>
-          <input type="number" value={guests} onChange={(e) => setGuests(Number(e.target.value))} min={1} max={room.capacity} />
+          <span style={{ fontSize: 10, color: 'var(--ink-3)', display: 'flex', justifyContent: 'space-between' }}>
+            <span>ຜູ້ເຂົ້າພັກ</span>
+            <span style={{ color: 'var(--ink-3)' }}>ສູງສຸດ {room.capacity} ຄົນ</span>
+          </span>
+          <input
+            type="number"
+            inputMode="numeric"
+            value={guests}
+            onChange={(e) => setGuestsClamped(Number(e.target.value))}
+            onBlur={() => setGuestsClamped(guests)}
+            min={1}
+            max={room.capacity}
+          />
+          {guests >= room.capacity && (
+            <span style={{ fontSize: 10, color: 'var(--warn)' }}>
+              ເຖິງຈຳນວນສູງສຸດແລ້ວ
+            </span>
+          )}
         </label>
         <div style={{ borderTop: '1px solid var(--line-2)', marginTop: 12, paddingTop: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
           <span style={{ fontSize: 12, color: 'var(--ink-2)' }}>{nights} ຄືນ × {formatKip(room.price_per_night)}</span>

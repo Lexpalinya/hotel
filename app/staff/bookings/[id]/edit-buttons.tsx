@@ -7,20 +7,29 @@ import { Modal, Field } from '@/components/modal';
 import type { Booking } from '@/lib/types';
 import { nightsBetween } from '@/lib/format';
 
-export default function BookingEditButtons({ booking }: { booking: Booking & { rooms?: { price_per_night: number } } }) {
+export default function BookingEditButtons({ booking }: { booking: Booking & { rooms?: { price_per_night: number; capacity?: number; number?: string } } }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
   const [err, setErr] = useState<string | null>(null);
+
+  const capacity = booking.rooms?.capacity ?? 99;
 
   const [checkIn, setCheckIn] = useState(booking.check_in);
   const [checkOut, setCheckOut] = useState(booking.check_out);
   const [guests, setGuests] = useState(booking.guests);
   const [notes, setNotes] = useState(booking.notes ?? '');
 
+  const setGuestsClamped = (raw: number) => {
+    if (!Number.isFinite(raw)) { setGuests(1); return; }
+    setGuests(Math.max(1, Math.min(capacity, Math.floor(raw))));
+  };
+
   const save = (e: React.FormEvent) => {
     e.preventDefault();
     setErr(null);
+    if (guests > capacity) { setErr(`ຫ້ອງນີ້ຮັບໄດ້ສູງສຸດ ${capacity} ຄົນ`); return; }
+    if (guests < 1) { setErr('ກະລຸນາໃສ່ຈຳນວນຜູ້ເຂົ້າພັກ'); return; }
     startTransition(async () => {
       const supabase = createClient();
       const newNights = nightsBetween(checkIn, checkOut);
@@ -67,8 +76,16 @@ export default function BookingEditButtons({ booking }: { booking: Booking & { r
               <input type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)} required min={checkIn} />
             </Field>
           </div>
-          <Field label="ຜູ້ເຂົ້າພັກ">
-            <input type="number" value={guests} onChange={(e) => setGuests(Number(e.target.value))} min={1} max={6} />
+          <Field label="ຜູ້ເຂົ້າພັກ" hint={`ສູງສຸດ ${capacity} ຄົນ`}>
+            <input
+              type="number"
+              inputMode="numeric"
+              value={guests}
+              onChange={(e) => setGuestsClamped(Number(e.target.value))}
+              onBlur={() => setGuestsClamped(guests)}
+              min={1}
+              max={capacity}
+            />
           </Field>
           <Field label="ໝາຍເຫດ">
             <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} />
