@@ -2,7 +2,6 @@
 
 import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { createClient } from '@/lib/supabase-client';
 
 export default function LoginPage() {
   return (
@@ -51,17 +50,15 @@ function LoginForm() {
       });
       if (!reset.ok) throw new Error('Unable to reset the previous session.');
 
-      const supabase = createClient();
-      if (mode === 'login') {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.auth.signUp({
-          email, password,
-          options: { data: { full_name: fullName } },
-        });
-        if (error) throw error;
-      }
+      const response = await fetch('/api/auth/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
+        body: JSON.stringify({ mode, email, password, fullName }),
+      });
+      const result = await response.json().catch(() => null) as { error?: string } | null;
+      if (!response.ok) throw new Error(result?.error || 'Authentication failed.');
+
       router.replace(next);
       router.refresh();
     } catch (e) {
