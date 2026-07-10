@@ -42,9 +42,16 @@ function LoginForm() {
     e.preventDefault();
     setErr(null);
     setLoading(true);
-    const supabase = createClient();
-
     try {
+      // Remove expired Supabase cookies before creating the browser client.
+      // Otherwise the client may try a stale refresh token before login.
+      const reset = await fetch('/api/auth/reset', {
+        method: 'POST',
+        cache: 'no-store',
+      });
+      if (!reset.ok) throw new Error('Unable to reset the previous session.');
+
+      const supabase = createClient();
       if (mode === 'login') {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
@@ -90,7 +97,7 @@ function LoginForm() {
 
           {err && (
             <div style={{ fontSize: 12, color: 'var(--danger)', background: 'var(--danger-soft)', padding: '8px 10px', borderRadius: 6 }}>
-              {err}
+              {friendlyAuthError(err)}
             </div>
           )}
 
@@ -115,3 +122,16 @@ const linkBtn: React.CSSProperties = {
   background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer',
   font: 'inherit', padding: 0, textDecoration: 'underline',
 };
+
+function friendlyAuthError(message: string) {
+  if (message.includes('timed out') || message.includes('Failed to fetch')) {
+    return 'ຕິດຕໍ່ Supabase ບໍ່ໄດ້ ກະລຸນາລອງໃໝ່';
+  }
+  if (message.includes('Invalid login credentials')) {
+    return 'ອີເມວ ຫຼື ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ';
+  }
+  if (message.includes('rate limit') || message.includes('Too many requests')) {
+    return 'ລອງຫຼາຍເທື່ອເກີນໄປ ກະລຸນາລໍຖ້າແລ້ວລອງໃໝ່';
+  }
+  return message;
+}
