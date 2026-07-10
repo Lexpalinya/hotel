@@ -2,7 +2,7 @@
   email admin@lifefootball.la
 }
 
-hotel.lifefootball.la {
+(hotel_routes) {
   encode zstd gzip
 
   @supabase path /auth/* /rest/* /storage/* /realtime/* /functions/* /graphql/v1
@@ -13,6 +13,10 @@ hotel.lifefootball.la {
   handle {
     reverse_proxy app:3000
   }
+}
+
+hotel.lifefootball.la {
+  import hotel_routes
 
   header {
     Strict-Transport-Security "max-age=31536000; includeSubDomains"
@@ -20,4 +24,8 @@ hotel.lifefootball.la {
     Referrer-Policy "strict-origin-when-cross-origin"
     -Server
   }
+}
+
+:8080 {
+  import hotel_routes
 }

@@ -3,6 +3,8 @@
 import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
+export const dynamic = 'force-static';
+
 export default function LoginPage() {
   return (
     <Suspense fallback={<LoginLoading />}>

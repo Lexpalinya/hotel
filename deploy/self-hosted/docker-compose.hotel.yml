@@ -24,6 +24,8 @@ services:
       AWS_S3_BUCKET_NAME: ${AWS_S3_BUCKET_NAME}
       AWS_S3_ENDPOINT: ${AWS_S3_ENDPOINT}
       AWS_S3_PUBLIC_URL: ${AWS_S3_PUBLIC_URL}
+    volumes:
+      - ../app/.next:/app/.next:ro
     depends_on:
       kong:
         condition: service_healthy
@@ -42,6 +44,7 @@ services:
       - "80:80"
       - "443:443"
       - "443:443/udp"
+      - "8080:8080"
     volumes:
       - ./volumes/proxy/hotel/Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
