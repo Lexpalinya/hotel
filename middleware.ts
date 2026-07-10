@@ -7,6 +7,16 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr';
 // the entire site (e.g. when NEXT_PUBLIC_* env vars are missing on a fresh
 // Vercel deploy).
 export async function middleware(request: NextRequest) {
+  const path = request.nextUrl.pathname;
+  const isStaffRoute = path.startsWith('/staff');
+  const isAppRoute = path.startsWith('/app');
+
+  // Public routes (especially /login and PWA assets) must never depend on
+  // Supabase availability. Login redirects itself after successful auth.
+  if (!isStaffRoute && !isAppRoute) {
+    return NextResponse.next({ request });
+  }
+
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -33,21 +43,10 @@ export async function middleware(request: NextRequest) {
 
     const { data: { user } } = await supabase.auth.getUser();
 
-    const path = request.nextUrl.pathname;
-    const isStaffRoute = path.startsWith('/staff');
-    const isAppRoute = path.startsWith('/app');
-    const isLogin = path.startsWith('/login');
-
     if (!user && (isStaffRoute || isAppRoute)) {
       const url = request.nextUrl.clone();
       url.pathname = '/login';
       url.searchParams.set('next', path);
-      return NextResponse.redirect(url);
-    }
-
-    if (user && isLogin) {
-      const url = request.nextUrl.clone();
-      url.pathname = '/staff';
       return NextResponse.redirect(url);
     }
 
@@ -59,5 +58,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.png$).*)'],
+  matcher: ['/app/:path*', '/staff/:path*'],
 };
