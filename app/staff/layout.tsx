@@ -4,7 +4,6 @@ import StaffShell from './shell';
 
 const NAV = [
   { href: '/staff',            icon: '◐', label: 'ພາບລວມ', section: 'ຫຼັກ' },
-  { href: '/staff/search',     icon: '⌕', label: 'ຄົ້ນຫາ' },
   { href: '/staff/bookings',   icon: '☰', label: 'ຈອງຫ້ອງພັກ', section: 'ຈອງຫ້ອງພັກ' },
   { href: '/staff/rooms',      icon: '▦', label: 'ກວດສອບຫ້ອງ', section: 'ບໍລິການ' },
   { href: '/staff/room-types', icon: '▤', label: 'ປະເພດຫ້ອງ', section: 'ຂໍ້ມູນພື້ນຖານ' },
