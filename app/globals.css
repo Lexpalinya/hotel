@@ -83,6 +83,49 @@ input:focus, textarea:focus, select:focus {
 
 a { color: inherit; text-decoration: none; }
 
+.login-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 40px 24px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 32px;
+}
+
+.login-skeleton {
+  height: 40px;
+  margin-top: 12px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--paper-2) 25%, var(--paper-3) 50%, var(--paper-2) 75%);
+  background-size: 200% 100%;
+  animation: login-loading 1.2s ease-in-out infinite;
+}
+
+.login-skeleton--title { width: 62%; height: 34px; margin: 8px 0 24px; }
+.login-skeleton--button { margin-top: 16px; }
+
+@keyframes login-loading {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+@media (max-width: 520px) {
+  .login-page { padding: 20px 14px; align-items: stretch; }
+  .login-card {
+    max-width: none;
+    min-height: calc(100dvh - 40px);
+    padding: 28px 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
 /* ─── Generic helpers ─── */
 .h-link:hover { color: var(--accent); }
 .h-card-hover { transition: background .12s, border-color .12s, transform .12s; }

@@ -6,9 +6,23 @@ import { createClient } from '@/lib/supabase-client';
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<LoginLoading />}>
       <LoginForm />
     </Suspense>
+  );
+}
+
+function LoginLoading() {
+  return (
+    <main className="login-page">
+      <div className="h-card login-card" aria-busy="true">
+        <div className="h-eyebrow">SUNANTHA HOTEL</div>
+        <div className="login-skeleton login-skeleton--title" />
+        <div className="login-skeleton" />
+        <div className="login-skeleton" />
+        <div className="login-skeleton login-skeleton--button" />
+      </div>
+    </main>
   );
 }
 
@@ -51,11 +65,8 @@ function LoginForm() {
   };
 
   return (
-    <main style={{
-      minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      padding: '40px 24px',
-    }}>
-      <div className="h-card" style={{ width: '100%', maxWidth: 420, padding: 32 }}>
+    <main className="login-page">
+      <div className="h-card login-card">
         <div className="h-eyebrow">SUNANTHA HOTEL</div>
         <h1 className="h-serif" style={{ fontSize: 28, margin: '4px 0 24px' }}>
           {mode === 'login' ? 'ເຂົ້າສູ່ລະບົບ' : 'ສ້າງບັນຊີ'}
