@@ -47,6 +47,7 @@ services:
       - "8080:8080"
     volumes:
       - ./volumes/proxy/hotel/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ../app/.next/static:/srv/next-static:ro
       - caddy_data:/data
       - caddy_config:/config
     depends_on:
