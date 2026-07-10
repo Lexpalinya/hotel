@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { createClient } from '@/lib/supabase-client';
 
 // Resize image client-side before upload — keeps storage costs low and pages
 // snappy. Max edge 1600px, JPEG q=82, falls back to original if anything in
@@ -40,16 +39,14 @@ export default function ImageUpload({
     setErr(null);
     setUploading(true);
     try {
-      const supabase = createClient();
       const blob = await compress(file);
-      const ext = blob.type === 'image/jpeg' ? 'jpg' : (file.name.split('.').pop() || 'jpg');
-      const name = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-      const { error: upErr } = await supabase.storage
-        .from('room-images')
-        .upload(name, blob, { contentType: blob.type, upsert: false });
-      if (upErr) throw upErr;
-      const { data } = supabase.storage.from('room-images').getPublicUrl(name);
-      onChange(data.publicUrl);
+      const form = new FormData();
+      form.set('file', blob, file.name);
+      form.set('folder', folder);
+      const response = await fetch('/api/uploads', { method: 'POST', body: form });
+      const data = await response.json() as { url?: string; error?: string };
+      if (!response.ok || !data.url) throw new Error(data.error || 'Upload failed.');
+      onChange(data.url);
     } catch (e) {
       setErr(e instanceof Error ? e.message : String(e));
     } finally {
@@ -60,14 +57,12 @@ export default function ImageUpload({
 
   const remove = async () => {
     if (!value) return;
-    // Best-effort delete from storage (if URL is ours)
     try {
-      const url = new URL(value);
-      const match = url.pathname.match(/\/room-images\/(.+)$/);
-      if (match) {
-        const supabase = createClient();
-        await supabase.storage.from('room-images').remove([match[1]]);
-      }
+      await fetch('/api/uploads', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: value }),
+      });
     } catch { /* ignore — orphan files are fine */ }
     onChange(null);
   };
