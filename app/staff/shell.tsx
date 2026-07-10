@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 
-type NavItem = { href: string; icon: string; label: string };
+type NavItem = { href: string; icon: string; label: string; section?: string };
 
 export default function StaffShell({
   nav, displayName, role, children,
@@ -65,6 +65,8 @@ export default function StaffShell({
           {nav.map((item) => {
             const active = item.href === pathname || (item.href !== '/staff' && pathname.startsWith(item.href));
             return (
+              <div key={item.href}>
+              {item.section && <div style={{ padding: '14px 12px 5px', fontSize: 9, opacity: 0.42, letterSpacing: '0.08em', textTransform: 'uppercase' }}>{item.section}</div>}
               <Link key={item.href} href={item.href} style={{
                 display: 'flex', alignItems: 'center', gap: 12,
                 padding: '10px 12px', borderRadius: 8, fontSize: 13,
@@ -76,6 +78,7 @@ export default function StaffShell({
                 <span style={{ fontSize: 14, width: 16, textAlign: 'center', opacity: 0.85 }}>{item.icon}</span>
                 <span>{item.label}</span>
               </Link>
+              </div>
             );
           })}
         </nav>

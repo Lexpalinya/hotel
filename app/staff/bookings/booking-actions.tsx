@@ -32,10 +32,6 @@ export default function BookingActions({
       }).eq('id', id);
       if (roomId) {
         await supabase.from('rooms').update({ status: 'dirty' }).eq('id', roomId);
-        await supabase.from('tasks').insert({
-          room_id: roomId, kind: 'cleaning', status: 'open',
-          note: `Turnover after ${id.slice(0, 8)}`,
-        });
       }
       router.refresh();
     });

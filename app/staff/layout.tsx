@@ -3,14 +3,15 @@ import { redirect } from 'next/navigation';
 import StaffShell from './shell';
 
 const NAV = [
-  { href: '/staff',              icon: '◐', label: 'Dashboard' },
-  { href: '/staff/rooms',        icon: '▦', label: 'ຕາລາງຫ້ອງ' },
-  { href: '/staff/bookings',     icon: '☰', label: 'ການຈອງ' },
-  { href: '/staff/guests',       icon: '◯', label: 'ແຂກ' },
-  { href: '/staff/housekeeping', icon: '✲', label: 'ແມ່ບ້ານ' },
-  { href: '/staff/inventory',    icon: '▤', label: 'ສະຕັອກ' },
-  { href: '/staff/floors',       icon: '≡', label: 'ຊັ້ນ' },
-  { href: '/staff/reports',      icon: '⎘', label: 'ລາຍງານ' },
+  { href: '/staff',            icon: '◐', label: 'ພາບລວມ', section: 'ຫຼັກ' },
+  { href: '/staff/search',     icon: '⌕', label: 'ຄົ້ນຫາ' },
+  { href: '/staff/bookings',   icon: '☰', label: 'ຈອງຫ້ອງພັກ', section: 'ຈອງຫ້ອງພັກ' },
+  { href: '/staff/rooms',      icon: '▦', label: 'ກວດສອບຫ້ອງ', section: 'ບໍລິການ' },
+  { href: '/staff/room-types', icon: '▤', label: 'ປະເພດຫ້ອງ', section: 'ຂໍ້ມູນພື້ນຖານ' },
+  { href: '/staff/guests',     icon: '○', label: 'ຂໍ້ມູນລູກຄ້າ' },
+  { href: '/staff/employees',  icon: '◉', label: 'ຂໍ້ມູນພະນັກງານ' },
+  { href: '/staff/floors',     icon: '≡', label: 'ຂໍ້ມູນຊັ້ນ' },
+  { href: '/staff/reports',    icon: '⎘', label: 'ລາຍງານ', section: 'ລາຍງານ' },
 ];
 
 export default async function StaffLayout({ children }: { children: React.ReactNode }) {

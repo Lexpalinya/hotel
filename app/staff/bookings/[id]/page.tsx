@@ -5,6 +5,7 @@ import { WTopBar, BookingStatusPill } from '@/components/staff-bits';
 import { formatKip, formatDateRange, formatDateLao } from '@/lib/format';
 import BookingEditButtons from './edit-buttons';
 import AddChargeButton from './add-charge-button';
+import AddPaymentButton from './add-payment-button';
 
 export const dynamic = 'force-dynamic';
 
@@ -120,8 +121,9 @@ export default async function BookingDetail({ params }: { params: { id: string }
 
           {/* PAYMENTS */}
           <div className="h-card" style={{ padding: 0 }}>
-            <div style={{ padding: '16px 22px', borderBottom: '1px solid var(--line)' }}>
+            <div style={{ padding: '16px 22px', borderBottom: '1px solid var(--line)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div className="h-eyebrow">ການຈ່າຍ</div>
+              <AddPaymentButton bookingId={booking.id} balance={balance} />
             </div>
             {!payments.length ? (
               <div style={{ padding: 28, textAlign: 'center', color: 'var(--ink-3)', fontSize: 13 }}>

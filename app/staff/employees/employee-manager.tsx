@@ -1,0 +1,6 @@
+'use client';
+import { useTransition } from 'react';
+import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase-client';
+import type { User } from '@/lib/types';
+export default function EmployeeManager({ employees }: { employees: User[] }) { const router = useRouter(); const [pending, start] = useTransition(); const role = (id: string, value: string) => start(async () => { await createClient().from('users').update({ role: value }).eq('id', id); router.refresh(); }); return <div style={{ padding: 'clamp(14px,3vw,28px)' }}><div className="h-card" style={{ padding: 0, overflow: 'auto' }}><div style={{ minWidth: 680 }}>{employees.map(e => <div key={e.id} style={{ display: 'grid', gridTemplateColumns: '1.4fr 1.5fr 130px', padding: '14px 18px', gap: 12, alignItems: 'center', borderBottom: '1px solid var(--line-2)', fontSize: 13 }}><div><strong>{e.full_name || '—'}</strong><div style={{ fontSize: 11, color: 'var(--ink-3)' }}>{e.phone || '—'}</div></div><span>{e.email}</span><select value={e.role} disabled={pending} onChange={x => role(e.id, x.target.value)}><option value="staff">staff</option><option value="admin">admin</option><option value="guest">ຍ້າຍເປັນລູກຄ້າ</option></select></div>)}</div></div></div>; }

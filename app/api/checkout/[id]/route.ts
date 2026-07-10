@@ -14,12 +14,6 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
   if (booking.room_id) {
     await supabase.from('rooms').update({ status: 'dirty' }).eq('id', booking.room_id);
-    await supabase.from('tasks').insert({
-      room_id: booking.room_id,
-      kind: 'cleaning',
-      status: 'open',
-      note: `Turnover after ${booking.id.slice(0, 8)}`,
-    });
   }
   return NextResponse.redirect(new URL('/app/history', req.url));
 }

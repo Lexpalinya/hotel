@@ -17,9 +17,10 @@ const STATUS_COLORS: Record<string, string> = {
 
 export default async function RoomsPage() {
   const supabase = createClient();
-  const [{ data: rooms }, { data: floors }] = await Promise.all([
+  const [{ data: rooms }, { data: floors }, { data: roomTypes }] = await Promise.all([
     supabase.from('rooms').select('*').order('number'),
     supabase.from('floors').select('*').order('number'),
+    supabase.from('room_types').select('*').eq('active', true).order('name'),
   ]);
 
   const byFloor = new Map<string | null, Room[]>();
@@ -35,7 +36,7 @@ export default async function RoomsPage() {
       <WTopBar
         title="ຕາລາງຫ້ອງ"
         sub={`${rooms?.length ?? 0} ຫ້ອງ · ${floors?.length ?? 0} ຊັ້ນ`}
-        actions={<AddRoomButton floors={floors ?? []} />}
+        actions={<AddRoomButton floors={floors ?? []} roomTypes={roomTypes ?? []} />}
       />
       <div style={{ padding: 'clamp(14px, 3vw, 28px)', display: 'grid', gap: 14 }}>
         {sortedFloors.map((f) => {

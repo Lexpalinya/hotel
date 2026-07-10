@@ -7,14 +7,15 @@ import { Modal, Field } from '@/components/modal';
 import ImageUpload from '@/components/image-upload';
 import type { Floor } from '@/lib/types';
 
-export default function AddRoomButton({ floors }: { floors: Floor[] }) {
+type RoomTypeOption = { name: string; beds: string | null; capacity: number; base_price: number };
+export default function AddRoomButton({ floors, roomTypes }: { floors: Floor[]; roomTypes: RoomTypeOption[] }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
   const [err, setErr] = useState<string | null>(null);
 
   const [number, setNumber] = useState('');
-  const [type, setType] = useState('Standard');
+  const [type, setType] = useState(roomTypes[0]?.name ?? 'Standard');
   const [beds, setBeds] = useState('King');
   const [capacity, setCapacity] = useState(2);
   const [price, setPrice] = useState(1200);
@@ -24,7 +25,7 @@ export default function AddRoomButton({ floors }: { floors: Floor[] }) {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   const reset = () => {
-    setNumber(''); setType('Standard'); setBeds('King'); setCapacity(2);
+    setNumber(''); setType(roomTypes[0]?.name ?? 'Standard'); setBeds('King'); setCapacity(2);
     setPrice(1200); setFloorId(floors[0]?.id ?? ''); setAmenities('WiFi, AC');
     setDescription(''); setImageUrl(null);
     setErr(null);
@@ -82,11 +83,8 @@ export default function AddRoomButton({ floors }: { floors: Floor[] }) {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <Field label="ປະເພດ">
-              <select value={type} onChange={(e) => setType(e.target.value)}>
-                <option>Standard</option>
-                <option>Deluxe</option>
-                <option>Deluxe Twin</option>
-                <option>Suite</option>
+              <select value={type} onChange={(e) => { const value=e.target.value; setType(value); const selected=roomTypes.find(t=>t.name===value); if(selected){setBeds(selected.beds??'');setCapacity(selected.capacity);setPrice(selected.base_price);} }}>
+                {roomTypes.map(t => <option key={t.name}>{t.name}</option>)}
               </select>
             </Field>
             <Field label="ຕຽງ">
