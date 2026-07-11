@@ -2,7 +2,7 @@
 
 export type UserRole = 'guest' | 'staff' | 'admin';
 export type RoomStatus =
-  | 'available' | 'reserved' | 'occupied' | 'dirty' | 'cleaning' | 'out_of_order';
+  | 'available' | 'reserved' | 'occupied' | 'dirty' | 'cleaning' | 'inspection' | 'out_of_order';
 export type BookingStatus =
   | 'pending' | 'confirmed' | 'checked_in' | 'checked_out' | 'cancelled' | 'no_show';
 export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded';

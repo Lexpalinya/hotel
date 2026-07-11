@@ -16,6 +16,7 @@ services:
     environment:
       NEXT_PUBLIC_SUPABASE_URL: ${PUBLIC_URL}
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${ANON_KEY}
+      SUPABASE_SERVICE_ROLE_KEY: ${SERVICE_ROLE_KEY}
       DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@db:5432/postgres
       DIRECT_URL: postgresql://postgres:${POSTGRES_PASSWORD}@db:5432/postgres
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}

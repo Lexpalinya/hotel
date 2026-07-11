@@ -18,7 +18,7 @@ export async function GET(request: Request) {
   if (conflictError) return NextResponse.json({ ok: false, error: conflictError.message }, { status: 500 });
   const blocked = (conflicts ?? []).map(row => row.room_id);
   let query = actor.supabase.from('rooms').select('*')
-    .eq('active', true).neq('status', 'out_of_order').gte('capacity', guests).order('price_per_night');
+    .eq('active', true).in('status', ['available','reserved']).gte('capacity', guests).order('price_per_night');
   if (blocked.length) query = query.not('id', 'in', `(${blocked.join(',')})`);
   const { data, error } = await query;
   if (error) return NextResponse.json({ ok: false, error: error.message }, { status: 500 });

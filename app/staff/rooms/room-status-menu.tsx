@@ -10,10 +10,7 @@ import type { Room, RoomStatus } from '@/lib/types';
 
 const STATUSES: { value: RoomStatus; label: string }[] = [
   { value: 'available',    label: 'ວ່າງ' },
-  { value: 'reserved',     label: 'ຖືກຈອງ' },
-  { value: 'occupied',     label: 'ມີຜູ້ພັກ' },
-  { value: 'dirty',        label: 'ລໍຖ້າທຳຄວາມສະອາດ' },
-  { value: 'cleaning',     label: 'ກຳລັງເຮັດ' },
+  { value: 'inspection',   label: 'ລໍກວດສອບຫ້ອງ' },
   { value: 'out_of_order', label: 'ປິດສ້ອມ' },
 ];
 
@@ -21,6 +18,7 @@ export default function RoomStatusMenu({ room, bg }: { room: Room; bg: string })
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
+  const [edit,setEdit]=useState({number:room.number,type:room.type,beds:room.beds||'',capacity:room.capacity,pricePerNight:room.price_per_night,description:room.description||'',amenities:(room.amenities||[]).join(', ')});
 
   const change = (status: RoomStatus) => {
     startTransition(async () => {
@@ -40,14 +38,14 @@ export default function RoomStatusMenu({ room, bg }: { room: Room; bg: string })
   };
 
   const remove = () => {
-    if (!confirm(`ລົບຫ້ອງ ${room.number}? (ບໍ່ສາມາດກູ້ຄືນໄດ້)`)) return;
+    if (!confirm(`ປິດໃຊ້ງານຫ້ອງ ${room.number}?`)) return;
     startTransition(async () => {
-      const supabase = createClient();
-      await supabase.from('rooms').delete().eq('id', room.id);
+      const response=await fetch(`/api/staff/rooms/${room.id}`,{method:'DELETE'});if(!response.ok){alert((await response.json()).error);return;}
       setOpen(false);
       router.refresh();
     });
   };
+  const saveRoom=()=>startTransition(async()=>{const response=await fetch(`/api/staff/rooms/${room.id}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(edit)});if(!response.ok){alert((await response.json()).error);return;}router.refresh()});
 
   return (
     <>
@@ -70,6 +68,10 @@ export default function RoomStatusMenu({ room, bg }: { room: Room; bg: string })
         sub={`${room.type} · ₭${room.price_per_night.toLocaleString()}/ຄືນ · ${room.capacity} ຄົນ`}>
         <div style={{ display: 'grid', gap: 16 }}>
           <ImageUpload value={room.image_url} onChange={updateImage} label="ຮູບຫ້ອງ" />
+          <div className="h-eyebrow">ຂໍ້ມູນຫ້ອງ</div>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}><input value={edit.number} onChange={e=>setEdit({...edit,number:e.target.value})} placeholder="ເລກຫ້ອງ"/><input value={edit.type} onChange={e=>setEdit({...edit,type:e.target.value})} placeholder="ປະເພດ"/><input value={edit.beds} onChange={e=>setEdit({...edit,beds:e.target.value})} placeholder="ຕຽງ"/><input type="number" min={1} value={edit.capacity} onChange={e=>setEdit({...edit,capacity:Number(e.target.value)})}/><input type="number" min={0} value={edit.pricePerNight} onChange={e=>setEdit({...edit,pricePerNight:Number(e.target.value)})}/><input value={edit.amenities} onChange={e=>setEdit({...edit,amenities:e.target.value})} placeholder="WiFi, AC"/></div>
+          <textarea value={edit.description} onChange={e=>setEdit({...edit,description:e.target.value})} placeholder="ລາຍລະອຽດ"/>
+          <button className="h-btn h-btn--accent" onClick={saveRoom} disabled={pending}>ບັນທຶກຂໍ້ມູນຫ້ອງ</button>
           <div className="h-eyebrow" style={{ marginBottom: 4 }}>ປ່ຽນສະຖານະ</div>
           {STATUSES.map((s) => (
             <button
@@ -95,7 +97,7 @@ export default function RoomStatusMenu({ room, bg }: { room: Room; bg: string })
               background: 'var(--paper)', color: 'var(--danger)',
               fontFamily: 'inherit', fontSize: 13, cursor: 'pointer',
             }}>
-            ລົບຫ້ອງ
+            ປິດໃຊ້ງານຫ້ອງ
           </button>
         </div>
       </Modal>

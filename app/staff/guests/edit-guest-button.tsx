@@ -1,7 +1,0 @@
-'use client';
-import { useState,useTransition } from 'react';
-import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase-client';
-import { Modal,Field } from '@/components/modal';
-import type { User } from '@/lib/types';
-export default function EditGuestButton({ guest }: { guest:User }) { const router=useRouter(); const [open,setOpen]=useState(false); const [pending,start]=useTransition(); const [fullName,setFullName]=useState(guest.full_name); const [phone,setPhone]=useState(guest.phone??''); const [type,setType]=useState(guest.guest_type??''); const save=(e:React.FormEvent)=>{e.preventDefault();start(async()=>{await createClient().from('users').update({full_name:fullName,phone:phone||null,guest_type:type||null}).eq('id',guest.id);setOpen(false);router.refresh();});}; return <><button className="h-btn" onClick={()=>setOpen(true)}>ແກ້ໄຂ</button><Modal open={open} onClose={()=>setOpen(false)} title="ແກ້ໄຂຂໍ້ມູນລູກຄ້າ" footer={<><button className="h-btn" onClick={()=>setOpen(false)}>ຍົກເລີກ</button><button form="guest-form" className="h-btn h-btn--accent" disabled={pending}>ບັນທຶກ</button></>}><form id="guest-form" onSubmit={save} style={{display:'grid',gap:12}}><Field label="ຊື່"><input required value={fullName} onChange={e=>setFullName(e.target.value)}/></Field><Field label="ເບີໂທ"><input value={phone} onChange={e=>setPhone(e.target.value)}/></Field><Field label="ປະເພດລູກຄ້າ"><input value={type} onChange={e=>setType(e.target.value)} placeholder="faculty, visitor..."/></Field></form></Modal></>; }

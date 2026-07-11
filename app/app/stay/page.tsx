@@ -70,17 +70,6 @@ export default async function StayPage() {
         </div>
       </div>
 
-      <div style={{
-        position: 'fixed', bottom: 64, left: 0, right: 0,
-        maxWidth: 480, margin: '0 auto', padding: '12px 18px 14px',
-        background: 'var(--paper)', borderTop: '1px solid var(--line)',
-      }}>
-        <form action={`/api/checkout/${b.id}`} method="POST">
-          <button type="submit" className="h-btn h-btn--primary" style={{ width: '100%', height: 46 }}>
-            Check Out + ຈ່າຍ {formatKip(extras)}
-          </button>
-        </form>
-      </div>
     </div>
   );
 }

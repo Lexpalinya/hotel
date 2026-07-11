@@ -12,13 +12,14 @@ const STATUS_COLORS: Record<string, string> = {
   occupied: 'var(--ink)',
   dirty: 'var(--warn-soft)',
   cleaning: 'var(--accent-soft)',
+  inspection: 'var(--warn-soft)',
   out_of_order: 'var(--danger-soft)',
 };
 
 export default async function RoomsPage() {
   const supabase = createClient();
   const [{ data: rooms }, { data: floors }, { data: roomTypes }] = await Promise.all([
-    supabase.from('rooms').select('*').order('number'),
+    supabase.from('rooms').select('*').eq('active',true).order('number'),
     supabase.from('floors').select('*').order('number'),
     supabase.from('room_types').select('*').eq('active', true).order('name'),
   ]);
