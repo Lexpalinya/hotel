@@ -2,6 +2,7 @@
 
 import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase-client';
 import type { BookingStatus } from '@/lib/types';
 
@@ -37,7 +38,15 @@ export default function BookingActions({
     });
   };
 
-  if (status === 'confirmed' || status === 'pending') {
+  if (status === 'pending') {
+    return (
+      <Link href={`/staff/bookings/${id}`} className="h-btn" style={{ height: 26, padding: '0 8px', fontSize: 11 }}>
+        ກວດກາຊຳລະ
+      </Link>
+    );
+  }
+
+  if (status === 'confirmed') {
     return (
       <div style={{ display: 'flex', gap: 4 }}>
         <button onClick={checkIn} disabled={pending} className="h-btn h-btn--accent" style={{ height: 26, padding: '0 8px', fontSize: 11 }}>
