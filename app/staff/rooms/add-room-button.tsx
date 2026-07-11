@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase-client';
 import { Modal, Field } from '@/components/modal';
 import ImageUpload from '@/components/image-upload';
 import type { Floor } from '@/lib/types';
@@ -35,16 +34,9 @@ export default function AddRoomButton({ floors, roomTypes }: { floors: Floor[]; 
     e.preventDefault();
     setErr(null);
     startTransition(async () => {
-      const supabase = createClient();
-      const { error } = await supabase.from('rooms').insert({
-        number, type, beds, capacity, price_per_night: price,
-        floor_id: floorId || null,
-        amenities: amenities.split(',').map(s => s.trim()).filter(Boolean),
-        description: description || null,
-        image_url: imageUrl,
-        status: 'available',
-      });
-      if (error) { setErr(error.message); return; }
+      const response=await fetch('/api/staff/rooms',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({number,type,beds,capacity,pricePerNight:price,floorId,amenities,description,imageUrl})});
+      const result=await response.json();
+      if (!response.ok) { setErr(result.error||'Create room failed'); return; }
       setOpen(false);
       reset();
       router.refresh();
