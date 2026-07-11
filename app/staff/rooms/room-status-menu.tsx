@@ -10,6 +10,8 @@ import type { Room, RoomStatus } from '@/lib/types';
 
 const STATUSES: { value: RoomStatus; label: string }[] = [
   { value: 'available',    label: 'ວ່າງ' },
+  { value: 'reserved',     label: 'ຖືກຈອງ' },
+  { value: 'occupied',     label: 'ມີຄົນພັກຢູ່' },
   { value: 'inspection',   label: 'ລໍກວດສອບຫ້ອງ' },
   { value: 'out_of_order', label: 'ປິດສ້ອມ' },
 ];
