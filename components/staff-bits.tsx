@@ -32,8 +32,8 @@ const ROOM_STATUS: Record<RoomStatus, { label: string; cls: string }> = {
   available:    { label: 'ວ່າງ',                cls: 'h-pill--ok' },
   reserved:     { label: 'ຖືກຈອງ',              cls: 'h-pill--info' },
   occupied:     { label: 'ມີຜູ້ພັກ',             cls: 'h-pill--dark' },
-  dirty:        { label: 'ລໍຖ້າທຳຄວາມສະອາດ',  cls: 'h-pill--warn' },
-  cleaning:     { label: 'ກຳລັງເຮັດ',           cls: 'h-pill--accent' },
+  dirty:        { label: 'ລໍກວດສອບຫ້ອງ',       cls: 'h-pill--warn' },
+  cleaning:     { label: 'ລໍກວດສອບຫ້ອງ',       cls: 'h-pill--warn' },
   inspection:   { label: 'ລໍກວດສອບຫ້ອງ',       cls: 'h-pill--warn' },
   out_of_order: { label: 'ປິດສ້ອມ',             cls: 'h-pill--danger' },
 };

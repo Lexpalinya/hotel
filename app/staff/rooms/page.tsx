@@ -10,8 +10,6 @@ const STATUS_COLORS: Record<string, string> = {
   available: 'var(--ok-soft)',
   reserved: 'var(--info-soft)',
   occupied: 'var(--ink)',
-  dirty: 'var(--warn-soft)',
-  cleaning: 'var(--accent-soft)',
   inspection: 'var(--warn-soft)',
   out_of_order: 'var(--danger-soft)',
 };
