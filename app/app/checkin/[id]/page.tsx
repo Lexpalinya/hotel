@@ -1,7 +1,6 @@
 import { createClient } from '@/lib/supabase-server';
 import { notFound } from 'next/navigation';
 import { QRish } from '@/components/qr';
-import CheckinSimulate from './sim';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,7 +33,6 @@ export default async function CheckinScreen({ params }: { params: { id: string }
           ນຳ QR ນີ້ໄປສະແດງທີ່ເຄົາເຕີລ໋ອບບີ້<br/>ພະນັກງານຈະມອບບັດກະແຈຫ້ອງ {' '}
           <span className="h-mono">{room?.number ?? '—'}</span> ໃຫ້
         </div>
-        <CheckinSimulate bookingId={booking.id} roomId={null} />
       </div>
     </div>
   );
