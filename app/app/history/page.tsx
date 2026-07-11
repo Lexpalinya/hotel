@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase-server';
 import { formatKip, formatDateRange } from '@/lib/format';
+import CancelBookingButton from './cancel-booking-button';
 import { BookingStatusPill } from '@/components/staff-bits';
 import Link from 'next/link';
 
@@ -43,7 +44,7 @@ export default async function HistoryPage() {
                   </div>
                   <div className="h-mono" style={{ fontSize: 14, fontWeight: 600 }}>{formatKip(b.total_amount)}</div>
                 </div>
-                <div style={{display:'flex',gap:8,marginTop:12}}>{b.status==='pending'&&!(b.payments??[]).some((p:any)=>p.status==='pending')&&<Link className="h-btn h-btn--accent" href={`/app/pay/${b.id}`}>ຊຳລະເງິນ</Link>}{(b.payments??[]).some((p:any)=>p.status==='pending')&&<span className="h-pill h-pill--warn">ລໍຖ້າ Staff ກວດສອບ</span>}{(b.payments??[]).some((p:any)=>p.status==='paid')&&<Link className="h-btn" href={`/app/receipt/${b.id}`}>ພິມໃບບິນ</Link>}</div>
+                <div style={{display:'flex',gap:8,marginTop:12,flexWrap:'wrap'}}>{b.status==='pending'&&!(b.payments??[]).some((p:any)=>p.status==='pending')&&<Link className="h-btn h-btn--accent" href={`/app/pay/${b.id}`}>ຊຳລະເງິນ 70%</Link>}{b.status==='pending'&&!(b.payments??[]).some((p:any)=>p.status==='paid')&&<CancelBookingButton id={b.id}/>} {(b.payments??[]).some((p:any)=>p.status==='pending')&&<span className="h-pill h-pill--warn">ລໍຖ້າ Staff ກວດສອບ</span>}{(b.payments??[]).some((p:any)=>p.status==='paid')&&<Link className="h-btn" href={`/app/receipt/${b.id}`}>ພິມໃບບິນ</Link>}</div>
               </div>
             );
           })}
