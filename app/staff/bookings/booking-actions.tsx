@@ -13,26 +13,16 @@ export default function BookingActions({
 
   const checkIn = () => {
     startTransition(async () => {
-      const supabase = createClient();
-      await supabase.from('bookings').update({
-        status: 'checked_in',
-        checked_in_at: new Date().toISOString(),
-      }).eq('id', id);
-      if (roomId) await supabase.from('rooms').update({ status: 'occupied' }).eq('id', roomId);
+      const response = await fetch(`/api/staff/bookings/${id}/check-in`, { method: 'POST' });
+      if (!response.ok) alert((await response.json()).error || 'Check-in failed');
       router.refresh();
     });
   };
 
   const checkOut = () => {
     startTransition(async () => {
-      const supabase = createClient();
-      await supabase.from('bookings').update({
-        status: 'checked_out',
-        checked_out_at: new Date().toISOString(),
-      }).eq('id', id);
-      if (roomId) {
-        await supabase.from('rooms').update({ status: 'dirty' }).eq('id', roomId);
-      }
+      const response = await fetch(`/api/staff/bookings/${id}/check-out`, { method: 'POST', headers: { 'Content-Type':'application/json' }, body: '{}' });
+      if (!response.ok) alert((await response.json()).error || 'Check-out failed');
       router.refresh();
     });
   };

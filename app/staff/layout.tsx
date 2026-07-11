@@ -20,22 +20,15 @@ export default async function StaffLayout({ children }: { children: React.ReactN
 
   const { data: profile } = await supabase
     .from('users').select('full_name, role').eq('id', user.id).single();
+  const effectiveRole = profile?.role;
 
-  // Auto-promote first user to staff (convenience for fresh setup).
-  if (profile && profile.role === 'guest') {
-    const { count } = await supabase.from('users')
-      .select('id', { count: 'exact', head: true })
-      .in('role', ['staff', 'admin']);
-    if ((count ?? 0) === 0) {
-      await supabase.from('users').update({ role: 'admin' }).eq('id', user.id);
-    }
-  }
+  if (!profile || !effectiveRole || !['staff', 'admin'].includes(effectiveRole)) redirect('/app');
 
   const displayName = profile?.full_name || user.email || '';
-  const role = profile?.role || 'staff';
+  const role = effectiveRole;
 
   return (
-    <StaffShell nav={NAV} displayName={displayName} role={role}>
+    <StaffShell nav={role === 'admin' ? NAV : NAV.filter(item => item.href !== '/staff/employees')} displayName={displayName} role={role}>
       {children}
     </StaffShell>
   );

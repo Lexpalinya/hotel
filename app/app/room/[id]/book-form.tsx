@@ -2,8 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase-client';
-import { formatKip, nightsBetween, bookingCode } from '@/lib/format';
+import { formatKip, nightsBetween } from '@/lib/format';
 import type { Room } from '@/lib/types';
 
 export default function BookForm({ room }: { room: Room }) {
@@ -37,28 +36,13 @@ export default function BookForm({ room }: { room: Room }) {
       return;
     }
     startTransition(async () => {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { setError('Not logged in'); return; }
-
-      const { data: booking, error: bErr } = await supabase
-        .from('bookings')
-        .insert({
-          code: bookingCode(),
-          guest_id: user.id,
-          room_id: room.id,
-          check_in: checkIn,
-          check_out: checkOut,
-          guests,
-          status: 'pending',
-          total_amount: total,
-        })
-        .select('id')
-        .single();
-
-      if (bErr || !booking) { setError(bErr?.message ?? 'Booking failed'); return; }
-
-      router.push(`/app/pay/${booking.id}`);
+      const response = await fetch('/api/bookings', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ roomId: room.id, checkIn, checkOut, guests }),
+      });
+      const result = await response.json() as { data?: { id: string }; error?: string };
+      if (!response.ok || !result.data) { setError(result.error ?? 'Booking failed'); return; }
+      router.push(`/app/pay/${result.data.id}`);
     });
   };
 
