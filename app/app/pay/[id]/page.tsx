@@ -29,12 +29,13 @@ export default async function PayPage({ params }: { params: { id: string } }) {
         <div style={{ background: 'var(--paper)', borderRadius: 16, padding: 22, border: '1px solid var(--line)', textAlign: 'center' }}>
           <div className="h-eyebrow" style={{ marginBottom: 4 }}>ຈຳນວນເງິນ</div>
           <div className="h-mono" style={{ fontSize: 38, fontWeight: 600, letterSpacing: '-0.02em' }}>
-            {formatKip(booking.total_amount)}<span style={{ fontSize: 14, fontWeight: 400, color: 'var(--ink-3)' }}>.00</span>
+            {formatKip(Math.ceil(booking.total_amount * .7))}<span style={{ fontSize: 14, fontWeight: 400, color: 'var(--ink-3)' }}>.00</span>
           </div>
           <div style={{ fontSize: 11, color: 'var(--ink-3)', marginTop: 4 }}>
             {booking.code} · ຫ້ອງ {room?.number ?? '—'}
           </div>
-          <PayPanel bookingId={booking.id} amount={booking.total_amount} />
+          <div style={{fontSize:12,color:'var(--ink-3)',marginBottom:10}}>ມັດຈຳ 70% ຂອງ {formatKip(booking.total_amount)}</div>
+          <PayPanel bookingId={booking.id} amount={Math.ceil(booking.total_amount * .7)} />
         </div>
       </div>
     </div>

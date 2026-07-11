@@ -10,7 +10,7 @@ export default async function StayPage() {
 
   const { data: bookings } = await supabase
     .from('bookings')
-    .select('id, code, status, check_in, check_out, total_amount, rooms(number, type, price_per_night), booking_charges(label, amount)')
+    .select('id, code, status, check_in, check_out, total_amount, rooms(number, type, price_per_night)')
     .eq('guest_id', user!.id)
     .eq('status', 'checked_in')
     .order('created_at', { ascending: false })
@@ -27,8 +27,6 @@ export default async function StayPage() {
   }
 
   const room = Array.isArray(b.rooms) ? b.rooms[0] : b.rooms;
-  const charges = Array.isArray(b.booking_charges) ? b.booking_charges : [];
-  const extras = charges.reduce((s, c) => s + c.amount, 0);
 
   return (
     <div style={{ background: '#f7f5f0' }}>
@@ -56,16 +54,6 @@ export default async function StayPage() {
               ຄ່າຫ້ອງ <span className="h-pill h-pill--ok" style={{ marginLeft: 8, height: 16, fontSize: 9, padding: '0 6px' }}>ຈ່າຍແລ້ວ</span>
             </span>
             <span className="h-mono">{formatKip(b.total_amount)}</span>
-          </div>
-          {charges.map((c, i) => (
-            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', borderBottom: '1px solid var(--line-2)', fontSize: 13 }}>
-              <span style={{ color: 'var(--ink-2)' }}>{c.label}</span>
-              <span className="h-mono">{formatKip(c.amount)}</span>
-            </div>
-          ))}
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 14px', background: 'var(--paper-2)', alignItems: 'baseline' }}>
-            <span style={{ fontWeight: 600, fontSize: 13 }}>ຍອດຄ້າງຊຳລະ</span>
-            <span className="h-mono" style={{ fontSize: 18, fontWeight: 600 }}>{formatKip(extras)}</span>
           </div>
         </div>
       </div>

@@ -4,9 +4,9 @@ import Link from 'next/link';
 import { WTopBar, BookingStatusPill } from '@/components/staff-bits';
 import { formatKip, formatDateRange, formatDateLao } from '@/lib/format';
 import BookingEditButtons from './edit-buttons';
-import AddChargeButton from './add-charge-button';
 import AddPaymentButton from './add-payment-button';
 import VerifyPaymentButton from './verify-payment-button';
+import MoveRoomButton from './move-room-button';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,7 +19,6 @@ export default async function BookingDetail({ params }: { params: { id: string }
       rooms(*),
       customers:customer_id(full_name, email, phone),
       users:guest_id(full_name, email, phone),
-      booking_charges(*),
       payments(*)
     `)
     .eq('id', params.id)
@@ -31,13 +30,10 @@ export default async function BookingDetail({ params }: { params: { id: string }
   const customer = Array.isArray(booking.customers) ? booking.customers[0] : booking.customers;
   const profile = Array.isArray(booking.users) ? booking.users[0] : booking.users;
   const guest = customer ?? profile;
-  const charges = booking.booking_charges ?? [];
   const payments = booking.payments ?? [];
 
-  const chargesTotal = charges.reduce((s: number, c: { amount: number }) => s + c.amount, 0);
   const paidTotal = payments.filter((p: { status: string }) => p.status === 'paid').reduce((s: number, p: { amount: number }) => s + p.amount, 0);
-  const grandTotal = booking.total_amount + chargesTotal;
-  const balance = grandTotal - paidTotal;
+  const balance = booking.total_amount - paidTotal;
 
   const walkinName = !guest && booking.notes?.startsWith('Walk-in:')
     ? booking.notes.replace('Walk-in:', '').split('·')[0].trim()
@@ -89,38 +85,7 @@ export default async function BookingDetail({ params }: { params: { id: string }
             </div>
 
             <BookingEditButtons booking={booking} />
-          </div>
-
-          {/* CHARGES */}
-          <div className="h-card" style={{ padding: 0 }}>
-            <div style={{ padding: '16px 22px', borderBottom: '1px solid var(--line)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                <div className="h-eyebrow">ຄ່າເພີ່ມ</div>
-                <div style={{ fontSize: 13, color: 'var(--ink-2)', marginTop: 2 }}>
-                  Mini-bar · ຊັກລີດ · late check-out ແລະອື່ນໆ
-                </div>
-              </div>
-              <AddChargeButton bookingId={booking.id} />
-            </div>
-            {!charges.length ? (
-              <div style={{ padding: 28, textAlign: 'center', color: 'var(--ink-3)', fontSize: 13 }}>
-                ຍັງບໍ່ມີຄ່າເພີ່ມ
-              </div>
-            ) : (
-              charges.map((c: { id: string; label: string; amount: number; created_at: string }) => (
-                <div key={c.id} style={{
-                  display: 'grid', gridTemplateColumns: '1fr auto',
-                  padding: '12px 22px', borderTop: '1px solid var(--line-2)',
-                  fontSize: 13, alignItems: 'center',
-                }}>
-                  <div>
-                    <div>{c.label}</div>
-                    <div style={{ fontSize: 11, color: 'var(--ink-3)' }}>{new Date(c.created_at).toLocaleString('lo-LA')}</div>
-                  </div>
-                  <span className="h-mono">{formatKip(c.amount)}</span>
-                </div>
-              ))
-            )}
+            <div style={{marginTop:8}}><MoveRoomButton bookingId={booking.id} checkIn={booking.check_in} checkOut={booking.check_out} guests={booking.guests}/></div>
           </div>
 
           {/* PAYMENTS */}
@@ -183,9 +148,7 @@ export default async function BookingDetail({ params }: { params: { id: string }
             <div className="h-eyebrow" style={{ marginBottom: 12 }}>ສະຫຼຸບ</div>
             <div style={{ display: 'grid', gap: 8, fontSize: 13 }}>
               <Row label="ຄ່າຫ້ອງ" value={formatKip(booking.total_amount)} />
-              <Row label={`ຄ່າເພີ່ມ (${charges.length})`} value={formatKip(chargesTotal)} />
               <div style={{ borderTop: '1px solid var(--line-2)', paddingTop: 8 }} />
-              <Row label="ລວມ" value={formatKip(grandTotal)} bold />
               <Row label="ຈ່າຍແລ້ວ" value={formatKip(paidTotal)} />
               <Row label="ຄ້າງຊຳລະ" value={formatKip(balance)} bold danger={balance > 0} />
             </div>
