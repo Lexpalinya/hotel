@@ -5,7 +5,7 @@ import BookForm from './book-form';
 
 export const dynamic = 'force-dynamic';
 
-export default async function RoomDetail({ params }: { params: { id: string } }) {
+export default async function RoomDetail({ params, searchParams }: { params: { id: string }; searchParams: { check_in?: string; check_out?: string; guests?: string } }) {
   const supabase = createClient();
   const { data: room } = await supabase.from('rooms').select('*').eq('id', params.id).single();
   if (!room) notFound();
@@ -53,7 +53,7 @@ export default async function RoomDetail({ params }: { params: { id: string } })
           </div>
         )}
 
-        <BookForm room={room} />
+        <BookForm room={room} initial={{ checkIn: searchParams.check_in, checkOut: searchParams.check_out, guests: Number(searchParams.guests || 1) }} />
       </div>
     </div>
   );

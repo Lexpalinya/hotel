@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase-client';
 import { QRish } from '@/components/qr';
 
 export default function PayPanel({ bookingId, amount }: { bookingId: string; amount: number }) {
@@ -13,20 +12,9 @@ export default function PayPanel({ bookingId, amount }: { bookingId: string; amo
   const markPaid = () => {
     setErr(null);
     startTransition(async () => {
-      const supabase = createClient();
-      const { error: payErr } = await supabase.from('payments').insert({
-        booking_id: bookingId,
-        amount,
-        method: 'promptpay',
-        status: 'paid',
-        paid_at: new Date().toISOString(),
-        ref: 'MVP-MOCK-' + Date.now(),
-      });
-      if (payErr) { setErr(payErr.message); return; }
-      const { error: bErr } = await supabase
-        .from('bookings').update({ status: 'confirmed' }).eq('id', bookingId);
-      if (bErr) { setErr(bErr.message); return; }
-      router.push('/app');
+      const response=await fetch('/api/customer/payments',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({bookingId})});
+      const result=await response.json() as {error?:string}; if(!response.ok){setErr(result.error||'Payment submission failed');return;}
+      router.push('/app/history');
       router.refresh();
     });
   };
@@ -43,7 +31,7 @@ export default function PayPanel({ bookingId, amount }: { bookingId: string; amo
         <div style={{ marginTop: 12, fontSize: 12, color: 'var(--danger)' }}>{err}</div>
       )}
       <button onClick={markPaid} disabled={pending} className="h-btn h-btn--primary" style={{ width: '100%', height: 44, marginTop: 18 }}>
-        {pending ? '...' : 'ຂ້ອຍຈ່າຍແລ້ວ — ຢືນຢັນ'}
+        {pending ? '...' : 'ແຈ້ງຊຳລະ — ສົ່ງໃຫ້ Staff ກວດສອບ'}
       </button>
     </>
   );

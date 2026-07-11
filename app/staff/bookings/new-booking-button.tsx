@@ -2,9 +2,8 @@
 
 import { useEffect, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase-client';
 import { Modal, Field } from '@/components/modal';
-import { formatKip, nightsBetween, bookingCode } from '@/lib/format';
+import { formatKip, nightsBetween } from '@/lib/format';
 import type { Room } from '@/lib/types';
 
 export default function NewBookingButton({ rooms }: { rooms: Room[] }) {
@@ -24,6 +23,7 @@ export default function NewBookingButton({ rooms }: { rooms: Room[] }) {
   const [checkOut, setCheckOut] = useState(tmrw.toISOString().slice(0, 10));
   const [guests, setGuests] = useState(1);
   const [paid, setPaid] = useState(true);
+  const [availableRooms, setAvailableRooms] = useState<Room[]>(rooms.filter(r => r.status === 'available'));
 
   const room = rooms.find((r) => r.id === roomId);
   const nights = nightsBetween(checkIn, checkOut);
@@ -34,6 +34,20 @@ export default function NewBookingButton({ rooms }: { rooms: Room[] }) {
   useEffect(() => {
     if (room && guests > room.capacity) setGuests(room.capacity);
   }, [room, guests]);
+
+  useEffect(() => {
+    if (!checkIn || !checkOut || checkOut <= checkIn) return;
+    const controller = new AbortController();
+    const timer = setTimeout(async () => {
+      const q = new URLSearchParams({ check_in: checkIn, check_out: checkOut, guests: String(guests) });
+      const response = await fetch(`/api/availability?${q}`, { signal: controller.signal });
+      if (!response.ok) return;
+      const result = await response.json() as { data?: Room[] };
+      setAvailableRooms(result.data ?? []);
+      if (roomId && !(result.data ?? []).some(r => r.id === roomId)) setRoomId('');
+    }, 250);
+    return () => { clearTimeout(timer); controller.abort(); };
+  }, [checkIn, checkOut, guests, roomId]);
 
   const setGuestsClamped = (raw: number) => {
     if (!Number.isFinite(raw)) { setGuests(1); return; }
@@ -56,58 +70,15 @@ export default function NewBookingButton({ rooms }: { rooms: Room[] }) {
     if (guests < 1) { setErr('ກະລຸນາໃສ່ຈຳນວນຜູ້ເຂົ້າພັກ'); return; }
 
     startTransition(async () => {
-      const supabase = createClient();
-
-      // 1. Create or find user by email
-      let guestId: string | null = null;
-      if (email) {
-        const { data: existing } = await supabase
-          .from('users').select('id').eq('email', email).maybeSingle();
-        if (existing) {
-          guestId = existing.id;
-          await supabase.from('users').update({ full_name: name, phone }).eq('id', existing.id);
-        }
-        // walk-in without auth: leave guest_id null, store name/contact in notes
-      }
-
-      // 2. Create booking
-      const { data: booking, error: bErr } = await supabase
-        .from('bookings')
-        .insert({
-          code: bookingCode(),
-          guest_id: guestId,
-          room_id: room.id,
-          check_in: checkIn,
-          check_out: checkOut,
-          guests,
-          status: paid ? 'confirmed' : 'pending',
-          total_amount: total,
-          notes: guestId ? null : `Walk-in: ${name}${phone ? ' · ' + phone : ''}${email ? ' · ' + email : ''}`,
-        })
-        .select('id')
-        .single();
-      if (bErr || !booking) { setErr(bErr?.message ?? 'Booking failed'); return; }
-
-      // 3. If marked paid, create payment record
-      if (paid) {
-        await supabase.from('payments').insert({
-          booking_id: booking.id,
-          amount: total,
-          method: 'cash',
-          status: 'paid',
-          paid_at: new Date().toISOString(),
-          ref: 'WALK-IN',
-        });
-        await supabase.from('rooms').update({ status: 'reserved' }).eq('id', room.id);
-      }
+      const response = await fetch('/api/staff/bookings', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ name,email,phone,roomId:room.id,checkIn,checkOut,guests,paid,method:'cash' }) });
+      const result = await response.json() as { error?:string };
+      if(!response.ok){setErr(result.error||'Booking failed');return;}
 
       setOpen(false);
       reset();
       router.refresh();
     });
   };
-
-  const availableRooms = rooms.filter((r) => r.status === 'available');
 
   return (
     <>

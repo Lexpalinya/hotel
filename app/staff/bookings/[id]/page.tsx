@@ -6,6 +6,7 @@ import { formatKip, formatDateRange, formatDateLao } from '@/lib/format';
 import BookingEditButtons from './edit-buttons';
 import AddChargeButton from './add-charge-button';
 import AddPaymentButton from './add-payment-button';
+import VerifyPaymentButton from './verify-payment-button';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,6 +17,7 @@ export default async function BookingDetail({ params }: { params: { id: string }
     .select(`
       *,
       rooms(*),
+      customers:customer_id(full_name, email, phone),
       users:guest_id(full_name, email, phone),
       booking_charges(*),
       payments(*)
@@ -26,7 +28,9 @@ export default async function BookingDetail({ params }: { params: { id: string }
   if (!booking) notFound();
 
   const room = Array.isArray(booking.rooms) ? booking.rooms[0] : booking.rooms;
-  const guest = Array.isArray(booking.users) ? booking.users[0] : booking.users;
+  const customer = Array.isArray(booking.customers) ? booking.customers[0] : booking.customers;
+  const profile = Array.isArray(booking.users) ? booking.users[0] : booking.users;
+  const guest = customer ?? profile;
   const charges = booking.booking_charges ?? [];
   const payments = booking.payments ?? [];
 
@@ -132,7 +136,7 @@ export default async function BookingDetail({ params }: { params: { id: string }
             ) : (
               payments.map((p: { id: string; method: string; status: string; amount: number; paid_at: string | null; ref: string | null }) => (
                 <div key={p.id} style={{
-                  display: 'grid', gridTemplateColumns: '1fr 100px auto',
+                  display: 'grid', gridTemplateColumns: '1fr 100px auto auto',
                   padding: '12px 22px', borderTop: '1px solid var(--line-2)',
                   fontSize: 13, alignItems: 'center',
                 }}>
@@ -146,6 +150,7 @@ export default async function BookingDetail({ params }: { params: { id: string }
                     <span className="dot" />{p.status}
                   </span>
                   <span className="h-mono">{formatKip(p.amount)}</span>
+                  {p.status === 'pending' && <VerifyPaymentButton id={p.id} />}
                 </div>
               ))
             )}

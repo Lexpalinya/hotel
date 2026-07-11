@@ -12,7 +12,7 @@ export default async function BookingsPage() {
   const [{ data: bookings }, { data: rooms }] = await Promise.all([
     supabase
       .from('bookings')
-      .select('id, code, check_in, check_out, guests, total_amount, status, room_id, notes, rooms(number, type), users:guest_id(full_name, email)')
+      .select('id, code, check_in, check_out, guests, total_amount, status, room_id, notes, rooms(number, type), customers:customer_id(full_name, email), users:guest_id(full_name, email)')
       .order('created_at', { ascending: false })
       .limit(100),
     supabase.from('rooms').select('*').order('number'),
@@ -43,7 +43,9 @@ export default async function BookingsPage() {
           )}
           {bookings?.map((b) => {
             const room = Array.isArray(b.rooms) ? b.rooms[0] : b.rooms;
-            const guest = Array.isArray(b.users) ? b.users[0] : b.users;
+            const customer = Array.isArray(b.customers) ? b.customers[0] : b.customers;
+            const profile = Array.isArray(b.users) ? b.users[0] : b.users;
+            const guest = customer ?? profile;
             // For walk-ins (no guest_id), parse name from notes "Walk-in: <name> · ..."
             const walkinName = !guest && b.notes?.startsWith('Walk-in:')
               ? b.notes.replace('Walk-in:', '').split('·')[0].trim()

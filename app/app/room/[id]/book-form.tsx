@@ -5,16 +5,16 @@ import { useRouter } from 'next/navigation';
 import { formatKip, nightsBetween } from '@/lib/format';
 import type { Room } from '@/lib/types';
 
-export default function BookForm({ room }: { room: Room }) {
+export default function BookForm({ room, initial }: { room: Room; initial?: { checkIn?: string; checkOut?: string; guests?: number } }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
   const today = new Date();
   const tmrw = new Date(today.getTime() + 86400000);
-  const [checkIn, setCheckIn] = useState(today.toISOString().slice(0, 10));
-  const [checkOut, setCheckOut] = useState(tmrw.toISOString().slice(0, 10));
-  const [guests, setGuests] = useState(1);
+  const [checkIn, setCheckIn] = useState(initial?.checkIn || today.toISOString().slice(0, 10));
+  const [checkOut, setCheckOut] = useState(initial?.checkOut || tmrw.toISOString().slice(0, 10));
+  const [guests, setGuests] = useState(Math.min(room.capacity, Math.max(1, initial?.guests || 1)));
 
   const nights = nightsBetween(checkIn, checkOut);
   const total = nights * room.price_per_night;

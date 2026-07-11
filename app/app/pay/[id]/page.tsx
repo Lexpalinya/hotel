@@ -36,12 +36,6 @@ export default async function PayPage({ params }: { params: { id: string } }) {
           </div>
           <PayPanel bookingId={booking.id} amount={booking.total_amount} />
         </div>
-        <div style={{
-          marginTop: 18, background: 'var(--info-soft)', borderRadius: 10,
-          padding: '12px 14px', fontSize: 12, color: 'oklch(0.32 0.06 230)', lineHeight: 1.5,
-        }}>
-          ໂໝດ MVP — ການຢືນຢັນເປັນ <strong>simulate</strong> · ໃນ production ຈະຕໍ່ກັບ PromptPay webhook ໂດຍກົງ
-        </div>
       </div>
     </div>
   );

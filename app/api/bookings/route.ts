@@ -24,8 +24,9 @@ export async function POST(request: Request) {
   const { data: conflict } = await actor.supabase.from('bookings').select('id').eq('room_id', room.id)
     .in('status', ['pending', 'confirmed', 'checked_in']).lt('check_in', body.checkOut).gt('check_out', body.checkIn).limit(1);
   if (conflict?.length) return NextResponse.json({ ok: false, error: 'Room is no longer available.' }, { status: 409 });
+  const { data: customer } = await actor.supabase.from('customers').select('id').eq('auth_user_id', actor.user.id).single();
   const { data, error } = await actor.supabase.from('bookings').insert({
-    code: bookingCode(), guest_id: actor.user.id, room_id: room.id,
+    code: bookingCode(), guest_id: actor.user.id, customer_id: customer?.id ?? null, room_id: room.id,
     check_in: body.checkIn, check_out: body.checkOut, guests,
     status: 'pending', total_amount: nights * room.price_per_night,
     source: actor.profile.role === 'guest' ? 'customer' : 'staff', created_by: actor.user.id,

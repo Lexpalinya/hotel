@@ -12,6 +12,7 @@ export default async function Receipt({ params }: { params: { id: string } }) {
     .select(`
       *,
       rooms(number, type, price_per_night),
+      customers:customer_id(full_name, email, phone),
       users:guest_id(full_name, email, phone),
       booking_charges(label, amount, created_at),
       payments(amount, method, status, paid_at, ref)
@@ -22,7 +23,9 @@ export default async function Receipt({ params }: { params: { id: string } }) {
   if (!booking) notFound();
 
   const room = Array.isArray(booking.rooms) ? booking.rooms[0] : booking.rooms;
-  const guest = Array.isArray(booking.users) ? booking.users[0] : booking.users;
+  const customer = Array.isArray(booking.customers) ? booking.customers[0] : booking.customers;
+  const profile = Array.isArray(booking.users) ? booking.users[0] : booking.users;
+  const guest = customer ?? profile;
   const charges = booking.booking_charges ?? [];
   const payments = (booking.payments ?? []).filter((p: { status: string }) => p.status === 'paid');
 

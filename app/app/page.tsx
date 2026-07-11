@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase-server';
 import { formatKip, formatDateLao } from '@/lib/format';
+import AvailabilitySearch from './availability-search';
 
 export const dynamic = 'force-dynamic';
 
@@ -114,67 +115,7 @@ export default async function GuestHome() {
           );
         })()}
 
-        {/* Rooms grid */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
-          <h2 className="h-serif" style={{ fontSize: 22, margin: 0, letterSpacing: '-0.01em' }}>ຫ້ອງວ່າງ</h2>
-          <span className="h-mono" style={{ fontSize: 11, color: 'var(--ink-3)' }}>{rooms?.length ?? 0} ຫ້ອງ</span>
-        </div>
-        {!rooms?.length ? (
-          <div style={{ padding: 40, textAlign: 'center', color: 'var(--ink-3)', fontSize: 13, background: 'var(--paper)', borderRadius: 12, border: '1px solid var(--line)' }}>
-            ບໍ່ມີຫ້ອງວ່າງໃນຕອນນີ້
-          </div>
-        ) : (
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))',
-            gap: 14,
-          }}>
-            {rooms.map((r) => (
-              <Link key={r.id} href={`/app/room/${r.id}`}
-                className="h-card-hover"
-                style={{
-                  background: 'var(--paper)', borderRadius: 14, overflow: 'hidden',
-                  border: '1px solid var(--line)', display: 'flex', flexDirection: 'column',
-                  textDecoration: 'none', color: 'var(--ink)',
-                }}>
-                <div style={{
-                  width: '100%', aspectRatio: '4 / 3', overflow: 'hidden',
-                  background: 'linear-gradient(135deg, var(--accent-soft), var(--paper-2))',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: 'var(--accent-ink)', fontFamily: 'var(--font-mono)', fontSize: 12,
-                }}>
-                  {r.image_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={r.image_url} alt={`ຫ້ອງ ${r.number}`}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                  ) : `ROOM ${r.number}`}
-                </div>
-                <div style={{ padding: 14, flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                    <div>
-                      <div className="h-mono" style={{ fontSize: 16, fontWeight: 600 }}>{r.number}</div>
-                      <div style={{ fontSize: 12, color: 'var(--ink-2)' }}>{r.type}</div>
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <div className="h-mono" style={{ fontSize: 15, fontWeight: 600 }}>{formatKip(r.price_per_night)}</div>
-                      <div style={{ fontSize: 10, color: 'var(--ink-3)' }}>/ ຄືນ</div>
-                    </div>
-                  </div>
-                  <div style={{ fontSize: 11, color: 'var(--ink-3)', marginTop: 'auto' }}>
-                    {r.capacity} ຄົນ · {r.beds || '—'}
-                  </div>
-                  {r.amenities?.length > 0 && (
-                    <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 4 }}>
-                      {r.amenities.slice(0, 3).map((a: string) => (
-                        <span key={a} className="h-pill" style={{ height: 18, fontSize: 10, padding: '0 7px' }}>{a}</span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
+        <AvailabilitySearch initialRooms={rooms ?? []} />
       </div>
     </>
   );
