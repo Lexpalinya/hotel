@@ -2,25 +2,35 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase-server';
 import { WTopBar, Stat } from '@/components/staff-bits';
 import { formatKip } from '@/lib/format';
+import { unstable_noStore as noStore } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
 
 export default async function Dashboard() {
+  noStore();
   const supabase = createClient();
+  const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Vientiane', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+  const dayStart = new Date(`${today}T00:00:00+07:00`).toISOString();
+  const dayEnd = new Date(`${today}T23:59:59.999+07:00`).toISOString();
 
   const [
     { count: totalRooms },
     { count: occupiedRooms },
     { data: arrivals },
+    { count: departures },
+    { count: pendingPayments },
     { data: revenueRows },
   ] = await Promise.all([
-    supabase.from('rooms').select('id', { count: 'exact', head: true }),
-    supabase.from('rooms').select('id', { count: 'exact', head: true }).eq('status', 'occupied'),
+    supabase.from('rooms').select('id', { count: 'exact', head: true }).eq('active', true),
+    supabase.from('bookings').select('id', { count: 'exact', head: true }).eq('status', 'checked_in'),
     supabase.from('bookings')
-      .select('id, code, check_in, guests, total_amount, status, rooms(number, type), users:guest_id(full_name)')
-      .eq('check_in', new Date().toISOString().slice(0, 10))
+      .select('id, code, check_in, guests, total_amount, status, rooms(number, type), customers:customer_id(full_name), users:guest_id(full_name)')
+      .eq('check_in', today)
+      .eq('status', 'confirmed')
       .order('created_at', { ascending: false }),
-    supabase.from('payments').select('amount').eq('status', 'paid'),
+    supabase.from('bookings').select('id', { count: 'exact', head: true }).eq('check_out', today).eq('status', 'checked_in'),
+    supabase.from('payments').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
+    supabase.from('payments').select('amount').eq('status', 'paid').gte('paid_at', dayStart).lte('paid_at', dayEnd),
   ]);
 
   const totalRevenue = (revenueRows ?? []).reduce((sum, p) => sum + (p.amount ?? 0), 0);
@@ -35,8 +45,10 @@ export default async function Dashboard() {
       <div style={{ padding: 'clamp(14px, 3vw, 28px)', display: 'grid', gap: 22 }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 14 }}>
           <Stat label="OCCUPANCY" value={`${occupancy}%`} hint={`${occupiedRooms ?? 0} / ${totalRooms ?? 0} ຫ້ອງ`} />
-          <Stat label="ມາວັນນີ້" value={arrivals?.length ?? 0} hint="check-in ຄ້າງ" />
-          <Stat label="ລາຍຮັບລວມ" value={formatKip(totalRevenue)} hint="ທັງໝົດ (ຈ່າຍແລ້ວ)" />
+          <Stat label="ລໍ CHECK-IN ມື້ນີ້" value={arrivals?.length ?? 0} hint="ຢືນຢັນແລ້ວ" />
+          <Stat label="ລໍ CHECK-OUT ມື້ນີ້" value={departures ?? 0} hint="ກຳລັງເຂົ້າພັກ" />
+          <Stat label="ລໍກວດກາຊຳລະ" value={pendingPayments ?? 0} hint="ລາຍການ" />
+          <Stat label="ລາຍຮັບມື້ນີ້" value={formatKip(totalRevenue)} hint="ຮັບເງິນແລ້ວ" />
         </div>
 
         <div>
@@ -58,7 +70,9 @@ export default async function Dashboard() {
               <div>
                 {arrivals.map((b) => {
                   const room = Array.isArray(b.rooms) ? b.rooms[0] : b.rooms;
-                  const guest = Array.isArray(b.users) ? b.users[0] : b.users;
+                  const customer = Array.isArray(b.customers) ? b.customers[0] : b.customers;
+                  const profile = Array.isArray(b.users) ? b.users[0] : b.users;
+                  const guest = customer ?? profile;
                   return (
                     <Link key={b.id} href={`/staff/bookings/${b.id}`} style={{
                       display: 'grid', gridTemplateColumns: '120px 1fr 80px 60px 120px',
