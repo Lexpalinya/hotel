@@ -36,6 +36,10 @@ function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [customerType, setCustomerType] = useState('visitor');
+  const [identityNo, setIdentityNo] = useState('');
+  const [address, setAddress] = useState('');
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -56,7 +60,7 @@ function LoginForm() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         cache: 'no-store',
-        body: JSON.stringify({ mode, email, password, fullName }),
+        body: JSON.stringify({ mode, email, password, fullName, phone, customerType, identityNo, address }),
       });
       const result = await response.json().catch(() => null) as { error?: string } | null;
       if (!response.ok) throw new Error(result?.error || 'Authentication failed.');
@@ -72,7 +76,7 @@ function LoginForm() {
 
   return (
     <main className="login-page">
-      <div className="h-card login-card">
+      <div className="h-card login-card" style={{maxWidth:mode==='signup'?620:420}}>
         <div className="h-eyebrow">SUNANTHA HOTEL</div>
         <h1 className="h-serif" style={{ fontSize: 28, margin: '4px 0 24px' }}>
           {mode === 'login' ? 'ເຂົ້າສູ່ລະບົບ' : 'ສ້າງບັນຊີ'}
@@ -80,10 +84,15 @@ function LoginForm() {
 
         <form onSubmit={submit} style={{ display: 'grid', gap: 12 }}>
           {mode === 'signup' && (
-            <label style={{ display: 'grid', gap: 5 }}>
-              <span style={{ fontSize: 11, color: 'var(--ink-3)' }}>ຊື່</span>
-              <input value={fullName} onChange={(e) => setFullName(e.target.value)} required />
-            </label>
+            <>
+              <label style={{ display: 'grid', gap: 5 }}><span style={{ fontSize: 11, color: 'var(--ink-3)' }}>ຊື່ ແລະ ນາມສະກຸນ</span><input value={fullName} onChange={(e) => setFullName(e.target.value)} required /></label>
+              <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))',gap:12}}>
+                <label style={{display:'grid',gap:5}}><span style={{fontSize:11,color:'var(--ink-3)'}}>ເບີໂທ</span><input type="tel" value={phone} onChange={e=>setPhone(e.target.value)} required/></label>
+                <label style={{display:'grid',gap:5}}><span style={{fontSize:11,color:'var(--ink-3)'}}>ປະເພດລູກຄ້າ</span><select value={customerType} onChange={e=>setCustomerType(e.target.value)}><option value="visitor">ບຸກຄົນທົ່ວໄປ</option><option value="faculty">ອາຈານ / ພະນັກງານ</option><option value="student">ນັກສຶກສາ</option><option value="alumni">ສິດເກົ່າ</option><option value="organization">ອົງກອນ</option></select></label>
+              </div>
+              <label style={{display:'grid',gap:5}}><span style={{fontSize:11,color:'var(--ink-3)'}}>ເລກບັດ / PASSPORT</span><input value={identityNo} onChange={e=>setIdentityNo(e.target.value)}/></label>
+              <label style={{display:'grid',gap:5}}><span style={{fontSize:11,color:'var(--ink-3)'}}>ທີ່ຢູ່</span><textarea value={address} onChange={e=>setAddress(e.target.value)} rows={2}/></label>
+            </>
           )}
           <label style={{ display: 'grid', gap: 5 }}>
             <span style={{ fontSize: 11, color: 'var(--ink-3)' }}>EMAIL</span>
