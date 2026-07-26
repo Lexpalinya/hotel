@@ -8,11 +8,12 @@ export const dynamic = 'force-dynamic';
 export default async function PayPage({ params }: { params: { id: string } }) {
   const supabase = createClient();
   const {data:{user}}=await supabase.auth.getUser();
+  if(!user)redirect(`/login?next=/app/pay/${params.id}`);
   const { data: booking } = await supabase
     .from('bookings')
     .select('id, code, total_amount, status, rooms(number, type),payments(amount,status)')
     .eq('id', params.id)
-    .eq('guest_id',user!.id)
+    .eq('guest_id',user.id)
     .single();
 
   if (!booking) notFound();

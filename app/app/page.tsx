@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase-server';
 import { createAdminClient } from '@/lib/supabase-admin';
 import { formatKip, formatDateLao } from '@/lib/format';
@@ -10,11 +11,12 @@ export default async function GuestHome() {
   const supabase = createClient();
   const database = createAdminClient();
   const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect('/login?next=/app');
   const today = new Date().toISOString().slice(0, 10);
   const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
 
   const [{ data: profile }, { data: conflicts }, { data: activeBookings }] = await Promise.all([
-    supabase.from('users').select('full_name').eq('id', user!.id).single(),
+    supabase.from('users').select('full_name').eq('id', user.id).single(),
     database
       .from('bookings')
       .select('room_id')
@@ -24,7 +26,7 @@ export default async function GuestHome() {
     supabase
       .from('bookings')
       .select('id, code, status, check_in, check_out, total_amount, rooms(number, type), payments(amount,status)')
-      .eq('guest_id', user!.id)
+      .eq('guest_id', user.id)
       .in('status', ['confirmed', 'checked_in'])
       .order('created_at', { ascending: false })
       .limit(1),
@@ -63,7 +65,7 @@ export default async function GuestHome() {
           width: 36, height: 36, borderRadius: 18, background: 'var(--accent-soft)',
           color: 'var(--accent-ink)', display: 'flex', alignItems: 'center',
           justifyContent: 'center', fontWeight: 600, fontSize: 13,
-        }}>{(profile?.full_name ?? user!.email ?? '?').charAt(0).toUpperCase()}</div>
+        }}>{(profile?.full_name ?? user.email ?? '?').charAt(0).toUpperCase()}</div>
       </div>
 
       {/* Desktop hero (hidden on mobile) */}

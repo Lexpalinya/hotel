@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase-server';
+import { redirect } from 'next/navigation';
 import ProfileEditor from './profile-editor';
 
 export const dynamic = 'force-dynamic';
@@ -6,9 +7,10 @@ export const dynamic = 'force-dynamic';
 export default async function ProfilePage() {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect('/login?next=/app/profile');
   const [{ data: profile }, { data: customer }] = await Promise.all([
-    supabase.from('users').select('*').eq('id', user!.id).single(),
-    supabase.from('customers').select('phone,customer_type,identity_no,address').eq('auth_user_id', user!.id).single(),
+    supabase.from('users').select('*').eq('id', user.id).single(),
+    supabase.from('customers').select('phone,customer_type,identity_no,address').eq('auth_user_id', user.id).single(),
   ]);
 
   return (
@@ -22,10 +24,10 @@ export default async function ProfilePage() {
             width: 56, height: 56, borderRadius: 28, background: 'var(--accent-soft)',
             color: 'var(--accent-ink)', display: 'flex', alignItems: 'center',
             justifyContent: 'center', fontSize: 22, fontWeight: 600,
-          }}>{(profile?.full_name ?? user!.email ?? '?').charAt(0).toUpperCase()}</div>
+          }}>{(profile?.full_name ?? user.email ?? '?').charAt(0).toUpperCase()}</div>
           <div>
             <div className="h-serif" style={{ fontSize: 18 }}>{profile?.full_name || '—'}</div>
-            <div style={{ fontSize: 12, color: 'var(--ink-3)' }}>{user!.email}</div>
+            <div style={{ fontSize: 12, color: 'var(--ink-3)' }}>{user.email}</div>
             <div style={{ fontSize: 11, color: 'var(--ink-3)', marginTop: 4 }}>
               ສະມາຊິກຕັ້ງແຕ່ {new Date(profile?.created_at ?? '').toLocaleDateString('lo-LA')}
             </div>

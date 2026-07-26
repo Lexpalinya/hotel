@@ -3,17 +3,19 @@ import { formatKip, formatDateRange } from '@/lib/format';
 import CancelBookingButton from './cancel-booking-button';
 import { BookingStatusPill } from '@/components/staff-bits';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
 export default async function HistoryPage() {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect('/login?next=/app/history');
 
   const { data: bookings } = await supabase
     .from('bookings')
     .select('id, code, status, check_in, check_out, total_amount, rooms(number, type), payments(amount,status)')
-    .eq('guest_id', user!.id)
+    .eq('guest_id', user.id)
     .order('created_at', { ascending: false });
 
   return (

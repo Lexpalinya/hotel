@@ -7,11 +7,12 @@ export const dynamic = 'force-dynamic';
 export default async function CheckinScreen({ params }: { params: { id: string } }) {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect(`/login?next=/app/checkin/${params.id}`);
   const { data: booking } = await supabase
     .from('bookings')
     .select('id, code, status, rooms(number)')
     .eq('id', params.id)
-    .eq('guest_id', user!.id)
+    .eq('guest_id', user.id)
     .single();
   if (!booking) notFound();
   if (booking.status !== 'confirmed') redirect('/app/history');

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase-server';
 import { formatKip, formatDateLao } from '@/lib/format';
 
@@ -7,11 +8,12 @@ export const dynamic = 'force-dynamic';
 export default async function StayPage() {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect('/login?next=/app/stay');
 
   const { data: bookings } = await supabase
     .from('bookings')
     .select('id, code, status, check_in, check_out, total_amount, rooms(number, type, price_per_night), payments(amount,status)')
-    .eq('guest_id', user!.id)
+    .eq('guest_id', user.id)
     .eq('status', 'checked_in')
     .order('created_at', { ascending: false })
     .limit(1);
