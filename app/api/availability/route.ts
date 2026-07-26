@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getRequestActor } from '@/lib/auth';
+import { createAdminClient } from '@/lib/supabase-admin';
 
 export async function GET(request: Request) {
   const actor = await getRequestActor();
@@ -11,13 +12,14 @@ export async function GET(request: Request) {
   if (!checkIn || !checkOut || checkOut <= checkIn || guests < 1) {
     return NextResponse.json({ ok: false, error: 'Invalid dates or guest count.' }, { status: 400 });
   }
-  const { data: conflicts, error: conflictError } = await actor.supabase
+  const database = createAdminClient();
+  const { data: conflicts, error: conflictError } = await database
     .from('bookings').select('room_id')
     .in('status', ['pending', 'confirmed', 'checked_in'])
     .lt('check_in', checkOut).gt('check_out', checkIn);
   if (conflictError) return NextResponse.json({ ok: false, error: conflictError.message }, { status: 500 });
   const blocked = (conflicts ?? []).map(row => row.room_id);
-  let query = actor.supabase.from('rooms').select('*')
+  let query = database.from('rooms').select('*')
     .eq('active', true).in('status', ['available','reserved']).gte('capacity', guests).order('price_per_night');
   if (blocked.length) query = query.not('id', 'in', `(${blocked.join(',')})`);
   const { data, error } = await query;

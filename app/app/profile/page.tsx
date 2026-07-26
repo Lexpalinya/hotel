@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase-server';
+import ProfileEditor from './profile-editor';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,6 +31,7 @@ export default async function ProfilePage() {
             </div>
           </div>
         </div>
+        <ProfileEditor initial={{fullName:profile?.full_name||'',phone:customer?.phone||'',customerType:customer?.customer_type||'visitor',identityNo:customer?.identity_no||'',address:customer?.address||''}}/>
 
         <div className="h-card" style={{padding:22,marginTop:14,display:'grid',gap:12,fontSize:13}}>
           <ProfileRow label="ເບີໂທ" value={customer?.phone}/>

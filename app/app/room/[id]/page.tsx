@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function RoomDetail({ params, searchParams }: { params: { id: string }; searchParams: { check_in?: string; check_out?: string; guests?: string } }) {
   const supabase = createClient();
-  const { data: room } = await supabase.from('rooms').select('*').eq('id', params.id).single();
+  const { data: room } = await supabase.from('rooms').select('*').eq('id', params.id).eq('active', true).neq('status', 'out_of_order').single();
   if (!room) notFound();
 
   return (

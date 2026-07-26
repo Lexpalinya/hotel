@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase-server';
+import { createAdminClient } from '@/lib/supabase-admin';
 import { formatKip, formatDateLao } from '@/lib/format';
 import AvailabilitySearch from './availability-search';
 
@@ -7,20 +8,40 @@ export const dynamic = 'force-dynamic';
 
 export default async function GuestHome() {
   const supabase = createClient();
+  const database = createAdminClient();
   const { data: { user } } = await supabase.auth.getUser();
+  const today = new Date().toISOString().slice(0, 10);
+  const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
 
-  const [{ data: profile }, { data: rooms }, { data: activeBookings }] = await Promise.all([
+  const [{ data: profile }, { data: conflicts }, { data: activeBookings }] = await Promise.all([
     supabase.from('users').select('full_name').eq('id', user!.id).single(),
-    supabase.from('rooms').select('*').eq('status', 'available').order('price_per_night').limit(12),
+    database
+      .from('bookings')
+      .select('room_id')
+      .in('status', ['pending', 'confirmed', 'checked_in'])
+      .lt('check_in', tomorrow)
+      .gt('check_out', today),
     supabase
       .from('bookings')
-      .select('id, code, status, check_in, check_out, total_amount, rooms(number, type)')
+      .select('id, code, status, check_in, check_out, total_amount, rooms(number, type), payments(amount,status)')
       .eq('guest_id', user!.id)
       .in('status', ['confirmed', 'checked_in'])
       .order('created_at', { ascending: false })
       .limit(1),
   ]);
 
+  const blockedRoomIds = (conflicts ?? []).map((booking) => booking.room_id);
+  let roomsQuery = database
+    .from('rooms')
+    .select('*')
+    .eq('active', true)
+    .in('status', ['available', 'reserved'])
+    .order('price_per_night')
+    .limit(12);
+  if (blockedRoomIds.length) {
+    roomsQuery = roomsQuery.not('id', 'in', `(${blockedRoomIds.join(',')})`);
+  }
+  const { data: rooms } = await roomsQuery;
   const activeBooking = activeBookings?.[0];
 
   return (
@@ -62,6 +83,11 @@ export default async function GuestHome() {
         {activeBooking && (() => {
           const room = Array.isArray(activeBooking.rooms) ? activeBooking.rooms[0] : activeBooking.rooms;
           const isCheckedIn = activeBooking.status === 'checked_in';
+          const paid = (activeBooking.payments ?? [])
+            .filter((payment) => payment.status === 'paid')
+            .reduce((sum, payment) => sum + payment.amount, 0);
+          const awaitingPayment = (activeBooking.payments ?? []).some((payment) => payment.status === 'pending');
+          const balance = Math.max(0, activeBooking.total_amount - paid);
           return (
             <div style={{
               background: 'var(--ink)', color: 'var(--paper)',
@@ -103,14 +129,22 @@ export default async function GuestHome() {
                   <div className="h-mono" style={{ fontSize: 12, marginTop: 2 }}>{activeBooking.code}</div>
                 </div>
               </div>
-              <Link href={isCheckedIn ? '/app/stay' : `/app/checkin/${activeBooking.id}`} style={{
-                display: 'inline-block', minWidth: 200, height: 40, borderRadius: 999,
-                background: 'var(--accent)', color: 'white',
-                fontWeight: 500, fontSize: 13, textAlign: 'center',
-                lineHeight: '40px', padding: '0 24px',
-              }}>
-                {isCheckedIn ? 'ເບິ່ງລາຍລະອຽດ →' : 'ສະແດງ QR ສຳລັບເຊັກອິນ →'}
-              </Link>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <Link href={isCheckedIn ? '/app/stay' : `/app/checkin/${activeBooking.id}`} style={{
+                  display: 'inline-block', minWidth: 200, height: 40, borderRadius: 999,
+                  background: 'var(--accent)', color: 'white',
+                  fontWeight: 500, fontSize: 13, textAlign: 'center',
+                  lineHeight: '40px', padding: '0 24px',
+                }}>
+                  {isCheckedIn ? 'ເບິ່ງລາຍລະອຽດ →' : 'ສະແດງ QR ສຳລັບເຊັກອິນ →'}
+                </Link>
+                {balance > 0 && !awaitingPayment && (
+                  <Link href={`/app/pay/${activeBooking.id}`} className="h-btn" style={{ minWidth: 180, height: 40, color: 'var(--paper)', borderColor: 'rgba(255,255,255,.25)' }}>
+                    ຊຳລະຍອດຄົງເຫຼືອ {formatKip(balance)}
+                  </Link>
+                )}
+                {awaitingPayment && <span className="h-pill h-pill--warn">ລໍຖ້າ Staff ກວດສອບ</span>}
+              </div>
             </div>
           );
         })()}

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getRequestActor } from '@/lib/auth';
+import { createAdminClient } from '@/lib/supabase-admin';
 import { bookingCode, nightsBetween } from '@/lib/format';
 
 type CreateBookingBody = { roomId?: string; checkIn?: string; checkOut?: string; guests?: number };
@@ -16,12 +17,13 @@ export async function POST(request: Request) {
   }
   const today = new Date().toISOString().slice(0, 10);
   if (body.checkIn < today) return NextResponse.json({ ok: false, error: 'Check-in cannot be in the past.' }, { status: 400 });
-  const { data: room } = await actor.supabase.from('rooms').select('*').eq('id', body.roomId).eq('active', true).single();
+  const database = createAdminClient();
+  const { data: room } = await database.from('rooms').select('*').eq('id', body.roomId).eq('active', true).single();
   if (!room || room.status === 'out_of_order') return NextResponse.json({ ok: false, error: 'Room is unavailable.' }, { status: 404 });
   if (guests > room.capacity) return NextResponse.json({ ok: false, error: `Room capacity is ${room.capacity}.` }, { status: 400 });
   const nights = nightsBetween(body.checkIn, body.checkOut);
   if (nights < 1) return NextResponse.json({ ok: false, error: 'Stay must be at least one night.' }, { status: 400 });
-  const { data: conflict } = await actor.supabase.from('bookings').select('id').eq('room_id', room.id)
+  const { data: conflict } = await database.from('bookings').select('id').eq('room_id', room.id)
     .in('status', ['pending', 'confirmed', 'checked_in']).lt('check_in', body.checkOut).gt('check_out', body.checkIn).limit(1);
   if (conflict?.length) return NextResponse.json({ ok: false, error: 'Room is no longer available.' }, { status: 409 });
   const { data: customer } = await actor.supabase.from('customers').select('id').eq('auth_user_id', actor.user.id).single();

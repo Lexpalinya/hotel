@@ -1,17 +1,20 @@
 import { createClient } from '@/lib/supabase-server';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { QRish } from '@/components/qr';
 
 export const dynamic = 'force-dynamic';
 
 export default async function CheckinScreen({ params }: { params: { id: string } }) {
   const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
   const { data: booking } = await supabase
     .from('bookings')
     .select('id, code, status, rooms(number)')
     .eq('id', params.id)
+    .eq('guest_id', user!.id)
     .single();
   if (!booking) notFound();
+  if (booking.status !== 'confirmed') redirect('/app/history');
 
   const room = Array.isArray(booking.rooms) ? booking.rooms[0] : booking.rooms;
 

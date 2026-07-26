@@ -10,7 +10,7 @@ export default async function StayPage() {
 
   const { data: bookings } = await supabase
     .from('bookings')
-    .select('id, code, status, check_in, check_out, total_amount, rooms(number, type, price_per_night)')
+    .select('id, code, status, check_in, check_out, total_amount, rooms(number, type, price_per_night), payments(amount,status)')
     .eq('guest_id', user!.id)
     .eq('status', 'checked_in')
     .order('created_at', { ascending: false })
@@ -27,6 +27,11 @@ export default async function StayPage() {
   }
 
   const room = Array.isArray(b.rooms) ? b.rooms[0] : b.rooms;
+  const paid = (b.payments ?? [])
+    .filter((payment) => payment.status === 'paid')
+    .reduce((sum, payment) => sum + payment.amount, 0);
+  const awaitingPayment = (b.payments ?? []).some((payment) => payment.status === 'pending');
+  const balance = Math.max(0, b.total_amount - paid);
 
   return (
     <div style={{ background: '#f7f5f0' }}>
@@ -50,11 +55,24 @@ export default async function StayPage() {
         <div className="h-eyebrow" style={{ marginBottom: 8 }}>ຄ່າໃຊ້ຈ່າຍ</div>
         <div className="h-card" style={{ padding: 0, marginBottom: 16, overflow: 'hidden' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', borderBottom: '1px solid var(--line-2)', fontSize: 13 }}>
-            <span style={{ color: 'var(--ink-2)' }}>
-              ຄ່າຫ້ອງ <span className="h-pill h-pill--ok" style={{ marginLeft: 8, height: 16, fontSize: 9, padding: '0 6px' }}>ຈ່າຍແລ້ວ</span>
-            </span>
+            <span style={{ color: 'var(--ink-2)' }}>ຄ່າຫ້ອງທັງໝົດ</span>
             <span className="h-mono">{formatKip(b.total_amount)}</span>
           </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', borderBottom: '1px solid var(--line-2)', fontSize: 13 }}>
+            <span style={{ color: 'var(--ink-2)' }}>ຊຳລະແລ້ວ</span>
+            <span className="h-mono">{formatKip(paid)}</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', fontSize: 13, fontWeight: 600 }}>
+            <span>ຍອດຄົງເຫຼືອ</span>
+            <span className="h-mono">{formatKip(balance)}</span>
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {balance > 0 && !awaitingPayment && (
+            <Link href={`/app/pay/${b.id}`} className="h-btn h-btn--accent">ຊຳລະຍອດຄົງເຫຼືອ</Link>
+          )}
+          {awaitingPayment && <span className="h-pill h-pill--warn">ລໍຖ້າ Staff ກວດສອບ</span>}
+          {paid > 0 && <Link href={`/app/receipt/${b.id}`} className="h-btn">ພິມໃບບິນ</Link>}
         </div>
       </div>
 
