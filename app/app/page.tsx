@@ -140,10 +140,13 @@ export default async function GuestHome() {
                 }}>
                   {isCheckedIn ? 'ເບິ່ງລາຍລະອຽດ →' : 'ສະແດງ QR ສຳລັບເຊັກອິນ →'}
                 </Link>
-                {balance > 0 && !awaitingPayment && (
+                {activeBooking.status === 'checked_in' && balance > 0 && !awaitingPayment && (
                   <Link href={`/app/pay/${activeBooking.id}`} className="h-btn" style={{ minWidth: 180, height: 40, color: 'var(--paper)', borderColor: 'rgba(255,255,255,.25)' }}>
                     ຊຳລະຍອດຄົງເຫຼືອ {formatKip(balance)}
                   </Link>
+                )}
+                {activeBooking.status === 'confirmed' && balance > 0 && !awaitingPayment && (
+                  <span className="h-pill h-pill--warn">ຈ່າຍຍອດຄົງເຫຼືອເມື່ອ check-in</span>
                 )}
                 {awaitingPayment && <span className="h-pill h-pill--warn">ລໍຖ້າ Staff ກວດສອບ</span>}
               </div>

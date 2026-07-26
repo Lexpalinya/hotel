@@ -21,8 +21,8 @@ export default async function PayPage({ params }: { params: { id: string } }) {
   const room = Array.isArray(booking.rooms) ? booking.rooms[0] : booking.rooms;
   const paid=(booking.payments??[]).filter((p:any)=>p.status==='paid').reduce((s:number,p:any)=>s+p.amount,0);
   const awaiting=(booking.payments??[]).some((p:any)=>p.status==='pending');
-  const deposit=Math.ceil(booking.total_amount*.7),target=booking.status==='pending'?deposit:booking.total_amount,amount=Math.max(0,target-paid);
-  if(!['pending','confirmed','checked_in'].includes(booking.status)||(!amount&&!awaiting))redirect('/app/history');
+  const deposit=Math.ceil(booking.total_amount*.3),target=booking.status==='pending'?deposit:booking.total_amount,amount=Math.max(0,target-paid);
+  if(!['pending','checked_in'].includes(booking.status)||(!amount&&!awaiting))redirect('/app/history');
 
   return (
     <div style={{ background: '#f7f5f0', minHeight: '100vh' }}>
@@ -41,7 +41,7 @@ export default async function PayPage({ params }: { params: { id: string } }) {
           <div style={{ fontSize: 11, color: 'var(--ink-3)', marginTop: 4 }}>
             {booking.code} · ຫ້ອງ {room?.number ?? '—'}
           </div>
-          <div style={{fontSize:12,color:'var(--ink-3)',marginBottom:10}}>{booking.status==='pending'?`ມັດຈຳ 70% ຂອງ ${formatKip(booking.total_amount)}`:`ຍອດຄົງເຫຼືອຈາກ ${formatKip(booking.total_amount)}`}</div>
+          <div style={{fontSize:12,color:'var(--ink-3)',marginBottom:10}}>{booking.status==='pending'?`ມັດຈຳ 30% ຂອງ ${formatKip(booking.total_amount)}`:`ຍອດຄົງເຫຼືອຈາກ ${formatKip(booking.total_amount)}`}</div>
           {awaiting?<div className="h-pill h-pill--warn">ລໍຖ້າ Staff ກວດສອບການຊຳລະ</div>:<PayPanel bookingId={booking.id} amount={amount} />}
         </div>
       </div>

@@ -9,6 +9,6 @@ export async function POST(request:Request,{params}:{params:{id:string}}){
   if(!Number.isFinite(amount)||amount<=0||amount>balance)return NextResponse.json({ok:false,error:'Invalid payment amount'},{status:422});
   const now=new Date().toISOString();const {data,error}=await a.supabase.from('payments').insert({booking_id:b.id,amount,method:body?.method||'cash',status:'paid',paid_at:now,verified_at:now,verified_by:a.user.id,created_by:a.user.id,ref:body?.reference||null}).select('id').single();
   if(error)return NextResponse.json({ok:false,error:error.message},{status:409});
-  if(paid+amount>=Math.ceil(b.total_amount*.7))await a.supabase.from('bookings').update({status:'confirmed'}).eq('id',b.id).eq('status','pending');
+  if(paid+amount>=Math.ceil(b.total_amount*.3))await a.supabase.from('bookings').update({status:'confirmed'}).eq('id',b.id).eq('status','pending');
   return NextResponse.json({ok:true,data,error:null},{status:201});
 }

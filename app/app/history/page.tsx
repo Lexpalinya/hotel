@@ -35,7 +35,7 @@ export default async function HistoryPage() {
             const room = Array.isArray(b.rooms) ? b.rooms[0] : b.rooms;
             const paid=(b.payments??[]).filter((p:any)=>p.status==='paid').reduce((s:number,p:any)=>s+p.amount,0);
             const awaiting=(b.payments??[]).some((p:any)=>p.status==='pending');
-            const deposit=Math.ceil(b.total_amount*.7),depositDue=Math.max(0,deposit-paid),balance=Math.max(0,b.total_amount-paid);
+            const deposit=Math.ceil(b.total_amount*.3),depositDue=Math.max(0,deposit-paid),balance=Math.max(0,b.total_amount-paid);
             return (
               <div key={b.id} className="h-card" style={{ padding: 14 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
@@ -51,8 +51,9 @@ export default async function HistoryPage() {
                 </div>
                 <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginTop:12,padding:'10px 12px',background:'var(--paper-2)',borderRadius:6,fontSize:11}}><span>ຊຳລະແລ້ວ <strong>{formatKip(paid)}</strong></span><span>ຄົງເຫຼືອ <strong>{formatKip(balance)}</strong></span></div>
                 <div style={{display:'flex',gap:8,marginTop:12,flexWrap:'wrap'}}>
-                  {b.status==='pending'&&!awaiting&&depositDue>0&&<Link className="h-btn h-btn--accent" href={`/app/pay/${b.id}`}>ຊຳລະມັດຈຳ 70%</Link>}
-                  {['confirmed','checked_in'].includes(b.status)&&!awaiting&&balance>0&&<Link className="h-btn h-btn--accent" href={`/app/pay/${b.id}`}>ຊຳລະຍອດຄົງເຫຼືອ</Link>}
+                  {b.status==='pending'&&!awaiting&&depositDue>0&&<Link className="h-btn h-btn--accent" href={`/app/pay/${b.id}`}>ຊຳລະມັດຈຳ 30%</Link>}
+                  {b.status==='confirmed'&&balance>0&&<span className="h-pill h-pill--warn">ຈ່າຍຍອດຄົງເຫຼືອເມື່ອ check-in</span>}
+                  {b.status==='checked_in'&&!awaiting&&balance>0&&<Link className="h-btn h-btn--accent" href={`/app/pay/${b.id}`}>ຊຳລະຍອດຄົງເຫຼືອ</Link>}
                   {b.status==='pending'&&!awaiting&&paid===0&&<CancelBookingButton id={b.id}/>}
                   {awaiting&&<span className="h-pill h-pill--warn">ລໍຖ້າ Staff ກວດສອບ</span>}
                   {b.status==='confirmed'&&<Link className="h-btn" href={`/app/checkin/${b.id}`}>QR Check-in</Link>}
