@@ -56,7 +56,7 @@ export default async function HistoryPage() {
                   {b.status==='checked_in'&&!awaiting&&balance>0&&<Link className="h-btn h-btn--accent" href={`/app/pay/${b.id}`}>ຊຳລະຍອດຄົງເຫຼືອ</Link>}
                   {b.status==='pending'&&!awaiting&&paid===0&&<CancelBookingButton id={b.id}/>}
                   {awaiting&&<span className="h-pill h-pill--warn">ລໍຖ້າ Staff ກວດສອບ</span>}
-                  {b.status==='confirmed'&&<Link className="h-btn" href={`/app/checkin/${b.id}`}>QR Check-in</Link>}
+                  {b.status==='confirmed'&&<span className="h-pill h-pill--warn">ລໍຖ້າ Staff check-in</span>}
                   {b.status==='checked_in'&&<Link className="h-btn" href="/app/stay">ຫ້ອງຂອງຂ້ອຍ</Link>}
                   {paid>0&&<Link className="h-btn" href={`/app/receipt/${b.id}`}>ພິມໃບບິນ</Link>}
                 </div>

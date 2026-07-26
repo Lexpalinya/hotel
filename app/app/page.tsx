@@ -132,13 +132,13 @@ export default async function GuestHome() {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                <Link href={isCheckedIn ? '/app/stay' : `/app/checkin/${activeBooking.id}`} style={{
+                <Link href="/app/stay" style={{
                   display: 'inline-block', minWidth: 200, height: 40, borderRadius: 999,
                   background: 'var(--accent)', color: 'white',
                   fontWeight: 500, fontSize: 13, textAlign: 'center',
                   lineHeight: '40px', padding: '0 24px',
                 }}>
-                  {isCheckedIn ? 'ເບິ່ງລາຍລະອຽດ →' : 'ສະແດງ QR ສຳລັບເຊັກອິນ →'}
+                  {isCheckedIn ? 'ເບິ່ງລາຍລະອຽດ →' : 'ລໍຖ້າ Staff check-in'}
                 </Link>
                 {activeBooking.status === 'checked_in' && balance > 0 && !awaitingPayment && (
                   <Link href={`/app/pay/${activeBooking.id}`} className="h-btn" style={{ minWidth: 180, height: 40, color: 'var(--paper)', borderColor: 'rgba(255,255,255,.25)' }}>
