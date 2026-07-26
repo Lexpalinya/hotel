@@ -4,12 +4,13 @@ import StaffShell from './shell';
 
 const NAV = [
   { href: '/staff',            icon: '◐', label: 'ພາບລວມ', section: 'ຫຼັກ' },
-  { href: '/staff/bookings',   icon: '☰', label: 'ຈອງຫ້ອງພັກ', section: 'ຈອງຫ້ອງພັກ' },
-  { href: '/staff/rooms',      icon: '▦', label: 'ກວດສອບຫ້ອງ', section: 'ບໍລິການ' },
-  { href: '/staff/room-types', icon: '▤', label: 'ປະເພດຫ້ອງ', section: 'ຂໍ້ມູນພື້ນຖານ' },
-  { href: '/staff/guests',     icon: '○', label: 'ຂໍ້ມູນລູກຄ້າ' },
-  { href: '/staff/employees',  icon: '◉', label: 'ຂໍ້ມູນພະນັກງານ' },
+  { href: '/staff/registrations', icon: '◎', label: 'ການລົງທະບຽນ', section: 'ການລົງທະບຽນ' },
+  { href: '/staff/rooms',      icon: '▦', label: 'ຈັດການຂໍ້ມູນຫ້ອງ', section: 'ຂໍ້ມູນພື້ນຖານ' },
+  { href: '/staff/room-types', icon: '▤', label: 'ຈັດການປະເພດຫ້ອງ' },
+  { href: '/staff/guests',     icon: '○', label: 'ຈັດການລູກຄ້າ' },
+  { href: '/staff/employees',  icon: '◉', label: 'ຈັດການພະນັກງານ' },
   { href: '/staff/floors',     icon: '≡', label: 'ຂໍ້ມູນຊັ້ນ' },
+  { href: '/staff/bookings',   icon: '☰', label: 'ຈັດການການຈອງ', section: 'ການຈອງ ແລະ ເຂົ້າ-ອອກ' },
   { href: '/staff/reports',    icon: '⎘', label: 'ລາຍງານ', section: 'ລາຍງານ' },
 ];
 
@@ -28,7 +29,7 @@ export default async function StaffLayout({ children }: { children: React.ReactN
   const role = effectiveRole;
 
   return (
-    <StaffShell nav={role === 'admin' ? NAV : NAV.filter(item => item.href !== '/staff/employees')} displayName={displayName} role={role}>
+    <StaffShell nav={role === 'admin' ? NAV : NAV.filter(item => !['/staff/employees','/staff/registrations'].includes(item.href))} displayName={displayName} role={role}>
       {children}
     </StaffShell>
   );

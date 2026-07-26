@@ -28,6 +28,7 @@ export default function NewBookingButton({ rooms }: { rooms: Room[] }) {
   const room = rooms.find((r) => r.id === roomId);
   const nights = nightsBetween(checkIn, checkOut);
   const total = room ? nights * room.price_per_night : 0;
+  const deposit = Math.ceil(total * .7);
   const maxGuests = room?.capacity ?? 99;
 
   // เมื่อเปลี่ยนห้อง ถ้า guests เกิน capacity ของห้องใหม่ ให้ clamp ลง
@@ -93,7 +94,7 @@ export default function NewBookingButton({ rooms }: { rooms: Room[] }) {
           <>
             <button type="button" className="h-btn" onClick={() => setOpen(false)}>ຍົກເລີກ</button>
             <button type="submit" form="new-booking-form" className="h-btn h-btn--accent" disabled={pending || !room}>
-              {pending ? '...' : `ສ້າງ + ${paid ? 'ບັນທຶກວ່າຈ່າຍ' : 'ລໍຈ່າຍ'} (${formatKip(total)})`}
+              {pending ? '...' : `ສ້າງ + ${paid ? 'ມັດຈຳ 70%' : 'ລໍຈ່າຍ'} (${formatKip(paid?deposit:total)})`}
             </button>
           </>
         }>
@@ -145,7 +146,7 @@ export default function NewBookingButton({ rooms }: { rooms: Room[] }) {
 
           <label style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 12px', background: 'var(--paper-2)', borderRadius: 6, cursor: 'pointer' }}>
             <input type="checkbox" checked={paid} onChange={(e) => setPaid(e.target.checked)} style={{ width: 'auto' }} />
-            <span style={{ fontSize: 13 }}>ຮັບເງິນສົດແລ້ວ (cash · ${formatKip(total).replace('$','')}) — ໝາຍວ່າຈ່າຍແລ້ວທັນທີ</span>
+            <span style={{ fontSize: 13 }}>ຮັບເງິນມັດຈຳ 70% ແລ້ວ (cash · {formatKip(deposit)})</span>
           </label>
 
           {err && (
